@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
@@ -48,6 +49,8 @@ instance Ord k => Ixed (MonoidalMap k a) where
       Just v  -> f v <&> \v' -> MM (M.insert k v' m)
       Nothing -> pure (MM m)
     {-# INLINE ix #-}
+
+instance Each (MonoidalMap k a) (MonoidalMap k b) a b
 
 instance Wrapped (MonoidalMap k a) where
     type Unwrapped (MonoidalMap k a) = M.Map k a
