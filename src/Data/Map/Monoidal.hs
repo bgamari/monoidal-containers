@@ -5,6 +5,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 -- | This module provides a 'Data.Map' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
@@ -50,7 +51,27 @@ instance Ord k => Ixed (MonoidalMap k a) where
       Nothing -> pure (MM m)
     {-# INLINE ix #-}
 
+instance Ord k => At (MonoidalMap k a) where
+    at k f (MM m) = f mv <&> \r -> case r of
+      Nothing -> maybe (MM m) (const (MM $ M.delete k m)) mv
+      Just v' -> MM $ M.insert k v' m
+      where mv = M.lookup k m
+    {-# INLINE at #-}
+
 instance Each (MonoidalMap k a) (MonoidalMap k b) a b
+
+instance Ord k => FunctorWithIndex k (MonoidalMap k)
+instance Ord k => FoldableWithIndex k (MonoidalMap k)
+instance Ord k => TraversableWithIndex k (MonoidalMap k) where
+    itraverse f (MM m) = fmap MM $ itraverse f m
+    {-# INLINE itraverse #-}
+
+instance Ord k => TraverseMin k (MonoidalMap k) where
+    traverseMin f (MM m) = fmap MM $ traverseMin f m
+    {-# INLINE traverseMin #-}
+instance Ord k => TraverseMax k (MonoidalMap k) where
+    traverseMax f (MM m) = fmap MM $ traverseMax f m
+    {-# INLINE traverseMax #-}
 
 instance AsEmpty (MonoidalMap k a) where
     _Empty = nearly (MM M.empty) (M.null . unpack)
