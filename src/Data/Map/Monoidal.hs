@@ -18,7 +18,12 @@
 
 module Data.Map.Monoidal
     ( MonoidalMap
+      -- * Often-needed functions
     , singleton
+    , size
+    , member
+    , notMember
+    , findWithDefault
     ) where
 
 import Data.Monoid
@@ -107,3 +112,25 @@ instance Ord k => IsList (MonoidalMap k a) where
 singleton :: Ord k => k -> a -> MonoidalMap k a
 singleton k a = MM $ M.singleton k a
 {-# INLINE singleton #-}
+
+-- | /O(1)/. The number of elements in the map.
+size :: MonoidalMap k a -> Int
+size = M.size . unpack
+{-# INLINE size #-}
+
+-- | /O(log n)/. Is the key a member of the map? See also 'notMember'.
+member :: Ord k => k -> MonoidalMap k a -> Bool
+member k = M.member k . unpack
+{-# INLINE member #-}
+
+-- | /O(log n)/. Is the key not a member of the map? See also 'member'.
+notMember :: Ord k => k -> MonoidalMap k a -> Bool
+notMember k = not . M.member k . unpack
+{-# INLINE notMember #-}
+
+-- | /O(log n)/. The expression @('findWithDefault' def k map)@ returns
+-- the value at key @k@ or returns default value @def@
+-- when the key is not in the map.
+findWithDefault :: Ord k => a -> k -> MonoidalMap k a -> a
+findWithDefault def k = M.findWithDefault def k . unpack
+{-# INLINE findWithDefault #-}
