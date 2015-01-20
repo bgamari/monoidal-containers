@@ -40,6 +40,11 @@ instance Ord k => Ixed (MonoidalMap k a) where
       Nothing -> pure (MM m)
     {-# INLINE ix #-}
 
+instance Wrapped (MonoidalMap k a) where
+    type Unwrapped (MonoidalMap k a) = M.Map k a
+    _Wrapped' = iso unpack pack
+    {-# INLINE _Wrapped' #-}
+
 instance (Ord k, Monoid a) => Monoid (MonoidalMap k a) where
     mempty = MM mempty
     {-# INLINE mempty #-}
