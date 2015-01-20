@@ -52,6 +52,10 @@ instance Ord k => Ixed (MonoidalMap k a) where
 
 instance Each (MonoidalMap k a) (MonoidalMap k b) a b
 
+instance AsEmpty (MonoidalMap k a) where
+    _Empty = nearly (MM M.empty) (M.null . unpack)
+    {-# INLINE _Empty #-}
+
 instance Wrapped (MonoidalMap k a) where
     type Unwrapped (MonoidalMap k a) = M.Map k a
     _Wrapped' = iso unpack pack
