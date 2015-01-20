@@ -5,7 +5,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE StandaloneDeriving #-}
 
 -- | This module provides a 'Data.Map' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
