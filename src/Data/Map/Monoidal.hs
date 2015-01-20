@@ -24,6 +24,8 @@ module Data.Map.Monoidal
     , member
     , notMember
     , findWithDefault
+    , elems
+    , keys
     ) where
 
 import Data.Monoid
@@ -134,3 +136,22 @@ notMember k = not . M.member k . unpack
 findWithDefault :: Ord k => a -> k -> MonoidalMap k a -> a
 findWithDefault def k = M.findWithDefault def k . unpack
 {-# INLINE findWithDefault #-}
+
+-- | /O(log n)/. Delete a key and its value from the map. When the key is not
+-- a member of the map, the original map is returned.
+delete :: Ord k => k -> MonoidalMap k a -> MonoidalMap k a
+delete k = _Wrapping' MM %~ M.delete k
+{-# INLINE delete #-}
+
+-- | /O(n)/.
+-- Return all elements of the map in the ascending order of their keys.
+-- Subject to list fusion.
+elems :: MonoidalMap k a -> [a]
+elems = M.elems . unpack      
+{-# INLINE elems #-}
+
+-- | /O(n)/. Return all keys of the map in ascending order. Subject to list
+-- fusion.
+keys :: MonoidalMap k a -> [k]
+keys = M.keys . unpack
+{-# INLINE keys #-}
