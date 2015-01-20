@@ -5,6 +5,15 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
+-- | This module provides a 'Data.Map' variant which uses the value's
+-- 'Monoid' instance to accumulate conflicting entries when merging
+-- 'Map's.
+--
+-- While some functions mirroring those of 'Data.Map' are provided
+-- here for convenience, more specialized needs will likely want to use
+-- either the @Newtype@ or @Wrapped@ instances to manipulate the
+-- underlying 'Map'.
+
 module Data.Map.Monoidal
     ( MonoidalMap
     , singleton
@@ -66,6 +75,7 @@ instance Ord k => IsList (MonoidalMap k a) where
     {-# INLINE toList #-}
 #endif
 
+-- | /O(1)/. A map with a single element.
 singleton :: Ord k => k -> a -> MonoidalMap k a
 singleton k a = MM $ M.singleton k a
 {-# INLINE singleton #-}
