@@ -5,7 +5,10 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
-module Data.Map.Monoidal ( MonoidalMap ) where
+module Data.Map.Monoidal
+    ( MonoidalMap
+    , singleton
+    ) where
 
 import Data.Monoid
 import Data.Foldable (Foldable)
@@ -55,3 +58,6 @@ instance Ord k => IsList (MonoidalMap k a) where
     fromList = MM . M.fromList
     toList = M.toList . unpack
 #endif
+
+singleton :: Ord k => k -> a -> MonoidalMap k a
+singleton k a = MM $ M.singleton k a
