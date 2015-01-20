@@ -61,8 +61,11 @@ instance Newtype (MonoidalMap k a) (M.Map k a) where
 instance Ord k => IsList (MonoidalMap k a) where
     type Item (MonoidalMap k a) = (k, a)
     fromList = MM . M.fromList
+    {-# INLINE fromList #-}
     toList = M.toList . unpack
+    {-# INLINE toList #-}
 #endif
 
 singleton :: Ord k => k -> a -> MonoidalMap k a
 singleton k a = MM $ M.singleton k a
+{-# INLINE singleton #-}
