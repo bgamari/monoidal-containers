@@ -23,15 +23,20 @@ module Data.HashMap.Monoidal
     , member
     , notMember
     , lookup
+    , lookupM
     , elems
     , keys
+    , delete
+    , mapKeys
+    , modify
+    , modifyDef
     ) where
 
 import Prelude hiding (lookup)
+import Data.Maybe (fromMaybe)
 import Data.Monoid
 import Data.Foldable (Foldable)
-import Data.Traversable (Traversable)
-import Control.Applicative (Applicative, pure)
+import Control.Applicative (pure)
 import Data.Data (Data)
 import Data.Typeable (Typeable)
 
@@ -130,6 +135,12 @@ lookup :: (Eq k, Hashable k) => k -> MonoidalHashMap k v -> Maybe v
 lookup k = M.lookup k . unpack
 {-# INLINE lookup #-}
 
+-- | /O(log n)/ Return the value to which the specified key is mapped,
+-- or 'Nothing' if this map contains no mapping for the key.
+lookupM :: (Eq k, Hashable k, Monoid v) => k -> MonoidalHashMap k v -> v
+lookupM k = fromMaybe mempty . M.lookup k . unpack
+{-# INLINE lookupM #-}
+
 -- | /O(log n)/. Delete a key and its value from the map. When the key is not
 -- a member of the map, the original map is returned.
 delete :: (Eq k, Hashable k) => k -> MonoidalHashMap k a -> MonoidalHashMap k a
@@ -148,3 +159,33 @@ elems = M.elems . unpack
 keys :: MonoidalHashMap k a -> [k]
 keys = M.keys . unpack
 {-# INLINE keys #-}
+
+-- | /O(log n)/. Modify a value on some key with a function, if value
+-- under key doesn't exist -- use mempty.
+modify :: (Monoid a, Hashable k, Eq k)
+       => (a -> a)
+       -> k -> MonoidalHashMap k a
+       -> MonoidalHashMap k a
+modify f k = pack
+           . M.insertWith (\_ old -> f old) k mempty
+           . unpack
+{-# INLINE modify #-}
+
+-- | /O(log n)/. Modify a value on some key with a function, providing
+-- a default value if that key doesn't exist.
+modifyDef :: (Monoid a, Hashable k, Eq k)
+          => a -> (a -> a)
+          -> k -> MonoidalHashMap k a
+          -> MonoidalHashMap k a
+modifyDef d f k = pack
+                . M.insertWith (\_ old -> f old) k d
+                . unpack
+{-# INLINE modifyDef #-}
+
+-- | /O(n)/. Map a function to each key of a map
+mapKeys :: (Monoid a, Hashable k, Eq k, Hashable k', Eq k')
+        => (k -> k') -> MonoidalHashMap k a
+        -> MonoidalHashMap k' a
+mapKeys f = fromList
+          . map (\(k, v) -> (f k, v))
+          . toList
