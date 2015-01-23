@@ -136,7 +136,7 @@ lookup k = M.lookup k . unpack
 {-# INLINE lookup #-}
 
 -- | /O(log n)/ Return the value to which the specified key is mapped,
--- or 'Nothing' if this map contains no mapping for the key.
+-- or mempty if this map contains no mapping for the key.
 lookupM :: (Eq k, Hashable k, Monoid v) => k -> MonoidalHashMap k v -> v
 lookupM k = fromMaybe mempty . M.lookup k . unpack
 {-# INLINE lookupM #-}
