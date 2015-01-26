@@ -167,7 +167,7 @@ modify :: (Monoid a, Hashable k, Eq k)
        -> k -> MonoidalHashMap k a
        -> MonoidalHashMap k a
 modify f k = pack
-           . M.insertWith (\_ old -> f old) k mempty
+           . M.insertWith (\_ old -> f old) k (f mempty)
            . unpack
 {-# INLINE modify #-}
 
