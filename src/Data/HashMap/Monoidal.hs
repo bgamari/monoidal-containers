@@ -101,9 +101,9 @@ instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
     {-# INLINE unpack #-}
 
 #if MIN_VERSION_base(4,7,0)
-instance (Eq k, Hashable k) => IsList (MonoidalHashMap k a) where
+instance (Eq k, Hashable k, Monoid a) => IsList (MonoidalHashMap k a) where
     type Item (MonoidalHashMap k a) = (k, a)
-    fromList = MM . M.fromList
+    fromList = MM . M.fromListWith mappend
     {-# INLINE fromList #-}
     toList = M.toList . unpack
     {-# INLINE toList #-}
