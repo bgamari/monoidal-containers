@@ -1,5 +1,5 @@
 name:                monoidal-containers
-version:             0.1.2.1
+version:             0.1.2.2
 synopsis:            Containers with monoidal accumulation
 description:         Containers with monoidal accumulation
 homepage:            http://github.com/bgamari/monoidal-containers
