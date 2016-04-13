@@ -146,7 +146,7 @@ delete k = _Wrapping' MM %~ M.delete k
 -- Return all elements of the map in the ascending order of their keys.
 -- Subject to list fusion.
 elems :: MonoidalMap k a -> [a]
-elems = M.elems . unpack      
+elems = M.elems . unpack
 {-# INLINE elems #-}
 
 -- | /O(n)/. Return all keys of the map in ascending order. Subject to list
