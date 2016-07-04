@@ -18,6 +18,8 @@
 module Data.HashMap.Monoidal
     ( MonoidalHashMap
       -- * Often-needed functions
+    , toList
+    , fromList
     , singleton
     , size
     , member
@@ -34,7 +36,7 @@ module Data.HashMap.Monoidal
     , filterWithKey
     ) where
 
-import Prelude hiding (lookup)
+import Prelude hiding (lookup, map)
 import Data.Maybe (fromMaybe)
 import Data.Monoid
 import Data.Foldable (Foldable)
@@ -43,7 +45,7 @@ import Data.Data (Data)
 import Data.Typeable (Typeable)
 
 #if MIN_VERSION_base(4,7,0)
-import GHC.Exts (IsList(..))
+import qualified GHC.Exts as Exts
 #endif
 
 import Control.DeepSeq
@@ -103,7 +105,7 @@ instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
     {-# INLINE unpack #-}
 
 #if MIN_VERSION_base(4,7,0)
-instance (Eq k, Hashable k, Monoid a) => IsList (MonoidalHashMap k a) where
+instance (Eq k, Hashable k, Monoid a) => Exts.IsList (MonoidalHashMap k a) where
     type Item (MonoidalHashMap k a) = (k, a)
     fromList = MM . M.fromListWith mappend
     {-# INLINE fromList #-}
@@ -162,6 +164,18 @@ keys :: MonoidalHashMap k a -> [k]
 keys = M.keys . unpack
 {-# INLINE keys #-}
 
+-- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
+-- contains duplicate mappings, the later mappings take precedence.
+fromList :: (Eq k, Hashable k) => [(k,a)] -> MonoidalHashMap k a
+fromList = pack . M.fromList
+{-# INLINE fromList #-}
+
+-- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
+-- contains duplicate mappings, the later mappings take precedence.
+toList :: MonoidalHashMap k a -> [(k,a)]
+toList = M.toList . unpack
+{-# INLINE toList #-}
+
 -- | /O(log n)/. Modify a value on some key with a function, if value
 -- under key doesn't exist -- use mempty.
 modify :: (Monoid a, Hashable k, Eq k)
@@ -186,19 +200,19 @@ modifyDef d f k = pack
 
 -- | /O(n)/. Map a function to each key of a map
 mapKeys :: (Monoid a, Hashable k, Eq k, Hashable k', Eq k')
-        => (k -> k') -> MonoidalHashMap k a
-        -> MonoidalHashMap k' a
+        => (k -> k') -> MonoidalHashMap k a -> MonoidalHashMap k' a
 mapKeys f = fromList
-          . map (\(k, v) -> (f k, v))
+          . fmap (\(k, v) -> (f k, v))
           . toList
+{-# INLINE mapKeys #-}
 
 -- | /O(n)/ Filter this map by retaining only elements satisfying a
 -- predicate.
 filterWithKey :: (k -> v -> Bool) -> MonoidalHashMap k v -> MonoidalHashMap k v
-filterWithKey pred = pack . HM.filterWithKey pred . unpack
+filterWithKey pred = pack . M.filterWithKey pred . unpack
 {-# INLINE filterWithKey #-}
 
 -- | /O(n)/ Transform this map by applying a function to every value.
 map :: (v1 -> v2) -> MonoidalHashMap k v1 -> MonoidalHashMap k v2
-map f = pack . HM.map f . unpack
+map f = pack . M.map f . unpack
 {-# INLINE map #-}
