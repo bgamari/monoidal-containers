@@ -23,6 +23,7 @@ module Data.Map.Monoidal
     , member
     , notMember
     , findWithDefault
+    , assocs
     , elems
     , keys
     ) where
@@ -141,6 +142,11 @@ findWithDefault def k = M.findWithDefault def k . unpack
 delete :: Ord k => k -> MonoidalMap k a -> MonoidalMap k a
 delete k = _Wrapping' MM %~ M.delete k
 {-# INLINE delete #-}
+
+-- | /O(n)/. Return all elements of the map and their keys
+assocs :: MonoidalMap k a -> [(k,a)]
+assocs = M.assocs . unpack
+{-# INLINE assocs #-}
 
 -- | /O(n)/. Return all elements of the map in the ascending order of their
 -- keys. Subject to list fusion.
