@@ -12,7 +12,7 @@
 --
 -- While some functions mirroring those of 'Data.Map' are provided
 -- here for convenience, more specialized needs will likely want to use
--- either the @Newtype@ or @Wrapped@ instances to manipulate the
+-- either the 'Newtype' or 'Wrapped' instances to manipulate the
 -- underlying 'Map'.
 
 module Data.Map.Monoidal
