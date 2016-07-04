@@ -30,6 +30,8 @@ module Data.HashMap.Monoidal
     , mapKeys
     , modify
     , modifyDef
+    , map
+    , filterWithKey
     ) where
 
 import Prelude hiding (lookup)
@@ -189,3 +191,14 @@ mapKeys :: (Monoid a, Hashable k, Eq k, Hashable k', Eq k')
 mapKeys f = fromList
           . map (\(k, v) -> (f k, v))
           . toList
+
+-- | /O(n)/ Filter this map by retaining only elements satisfying a
+-- predicate.
+filterWithKey :: (k -> v -> Bool) -> MonoidalHashMap k v -> MonoidalHashMap k v
+filterWithKey pred = pack . HM.filterWithKey pred . unpack
+{-# INLINE filterWithKey #-}
+
+-- | /O(n)/ Transform this map by applying a function to every value.
+map :: (v1 -> v2) -> MonoidalHashMap k v1 -> MonoidalHashMap k v2
+map f = pack . HM.map f . unpack
+{-# INLINE map #-}
