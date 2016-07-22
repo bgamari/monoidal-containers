@@ -170,8 +170,8 @@ fromList :: (Eq k, Hashable k, Monoid a) => [(k,a)] -> MonoidalHashMap k a
 fromList = pack . M.fromListWith mappend
 {-# INLINE fromList #-}
 
--- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
--- contains duplicate mappings, the later mappings take precedence.
+-- | /O(n*log n)/.  Return a list of this map's elements. The list is produced
+-- lazily. The order of its elements is unspecified.
 toList :: MonoidalHashMap k a -> [(k,a)]
 toList = M.toList . unpack
 {-# INLINE toList #-}
@@ -198,7 +198,8 @@ modifyDef d f k = pack
                 . unpack
 {-# INLINE modifyDef #-}
 
--- | /O(n)/. Map a function to each key of a map
+-- | /O(n)/. Map a function to each key of a map, if it will result
+-- in duplicated mappings, their values will be merged in unspecified order
 mapKeys :: (Monoid a, Hashable k, Eq k, Hashable k', Eq k')
         => (k -> k') -> MonoidalHashMap k a -> MonoidalHashMap k' a
 mapKeys f = fromList
