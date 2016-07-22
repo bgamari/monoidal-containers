@@ -165,9 +165,9 @@ keys = M.keys . unpack
 {-# INLINE keys #-}
 
 -- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
--- contains duplicate mappings, the later mappings take precedence.
-fromList :: (Eq k, Hashable k) => [(k,a)] -> MonoidalHashMap k a
-fromList = pack . M.fromList
+-- contains duplicate mappings, values will be merged using (mappend newVal oldVal).
+fromList :: (Eq k, Hashable k, Monoid a) => [(k,a)] -> MonoidalHashMap k a
+fromList = pack . M.fromListWith mappend
 {-# INLINE fromList #-}
 
 -- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
