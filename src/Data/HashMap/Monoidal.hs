@@ -152,8 +152,7 @@ delete k = _Wrapping' MM %~ M.delete k
 {-# INLINE delete #-}
 
 -- | /O(n)/.
--- Return all elements of the map in the ascending order of their keys.
--- Subject to list fusion.
+-- Return a list of this map's values. The list is produced lazily.
 elems :: MonoidalHashMap k a -> [a]
 elems = M.elems . unpack
 {-# INLINE elems #-}
