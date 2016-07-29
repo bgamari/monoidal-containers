@@ -19,8 +19,9 @@ source-repository head
 
 library
   exposed-modules:     Data.Map.Monoidal
-                       Data.Map.Monoidal.Strict
                        Data.HashMap.Monoidal
+  if impl(ghc >= 7.6.3)
+    exposed-modules:     Data.Map.Monoidal.Strict
   other-extensions:    CPP,
                        MultiParamTypeClasses,
                        GeneralizedNewtypeDeriving,
