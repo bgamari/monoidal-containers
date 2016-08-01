@@ -55,7 +55,7 @@ import Control.Lens
 import Control.Newtype
 
 -- | A 'HashMap' with monoidal accumulation
-newtype MonoidalHashMap k a = MM (M.HashMap k a)
+newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving (Show, Read, Functor, Eq, NFData,
               Foldable, Traversable,
               Data, Typeable)
@@ -63,15 +63,15 @@ newtype MonoidalHashMap k a = MM (M.HashMap k a)
 type instance Index (MonoidalHashMap k a) = k
 type instance IxValue (MonoidalHashMap k a) = a
 instance (Eq k, Hashable k) => Ixed (MonoidalHashMap k a) where
-    ix k f (MM m) = case M.lookup k m of
-      Just v  -> f v <&> \v' -> MM (M.insert k v' m)
-      Nothing -> pure (MM m)
+    ix k f (MonoidalHashMap m) = case M.lookup k m of
+      Just v  -> f v <&> \v' -> MonoidalHashMap (M.insert k v' m)
+      Nothing -> pure (MonoidalHashMap m)
     {-# INLINE ix #-}
 
 instance (Eq k, Hashable k) => At (MonoidalHashMap k a) where
-    at k f (MM m) = f mv <&> \r -> case r of
-      Nothing -> maybe (MM m) (const (MM $ M.delete k m)) mv
-      Just v' -> MM $ M.insert k v' m
+    at k f (MonoidalHashMap m) = f mv <&> \r -> case r of
+      Nothing -> maybe (MonoidalHashMap m) (const (MonoidalHashMap $ M.delete k m)) mv
+      Just v' -> MonoidalHashMap $ M.insert k v' m
       where mv = M.lookup k m
     {-# INLINE at #-}
 
@@ -80,11 +80,11 @@ instance Each (MonoidalHashMap k a) (MonoidalHashMap k b) a b
 instance (Eq k, Hashable k) => FunctorWithIndex k (MonoidalHashMap k)
 instance (Eq k, Hashable k) => FoldableWithIndex k (MonoidalHashMap k)
 instance (Eq k, Hashable k) => TraversableWithIndex k (MonoidalHashMap k) where
-    itraverse f (MM m) = fmap MM $ itraverse f m
+    itraverse f (MonoidalHashMap m) = fmap MonoidalHashMap $ itraverse f m
     {-# INLINE itraverse #-}
 
 instance AsEmpty (MonoidalHashMap k a) where
-    _Empty = nearly (MM M.empty) (M.null . unpack)
+    _Empty = nearly (MonoidalHashMap M.empty) (M.null . unpack)
     {-# INLINE _Empty #-}
 
 instance Wrapped (MonoidalHashMap k a) where
@@ -93,21 +93,21 @@ instance Wrapped (MonoidalHashMap k a) where
     {-# INLINE _Wrapped' #-}
 
 instance (Eq k, Hashable k, Monoid a) => Monoid (MonoidalHashMap k a) where
-    mempty = MM mempty
+    mempty = MonoidalHashMap mempty
     {-# INLINE mempty #-}
-    MM a `mappend` MM b = MM $ M.unionWith mappend a b
+    MonoidalHashMap a `mappend` MonoidalHashMap b = MonoidalHashMap $ M.unionWith mappend a b
     {-# INLINE mappend #-}
 
 instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
-    pack = MM
+    pack = MonoidalHashMap
     {-# INLINE pack #-}
-    unpack (MM a) = a
+    unpack (MonoidalHashMap a) = a
     {-# INLINE unpack #-}
 
 #if MIN_VERSION_base(4,7,0)
 instance (Eq k, Hashable k, Monoid a) => Exts.IsList (MonoidalHashMap k a) where
     type Item (MonoidalHashMap k a) = (k, a)
-    fromList = MM . M.fromListWith mappend
+    fromList = MonoidalHashMap . M.fromListWith mappend
     {-# INLINE fromList #-}
     toList = M.toList . unpack
     {-# INLINE toList #-}
@@ -115,7 +115,7 @@ instance (Eq k, Hashable k, Monoid a) => Exts.IsList (MonoidalHashMap k a) where
 
 -- | /O(1)/. A map with a single element.
 singleton :: (Eq k, Hashable k) => k -> a -> MonoidalHashMap k a
-singleton k a = MM $ M.singleton k a
+singleton k a = MonoidalHashMap $ M.singleton k a
 {-# INLINE singleton #-}
 
 -- | /O(1)/. The number of elements in the map.
@@ -148,7 +148,7 @@ lookupM k = fromMaybe mempty . M.lookup k . unpack
 -- | /O(log n)/. Delete a key and its value from the map. When the key is not
 -- a member of the map, the original map is returned.
 delete :: (Eq k, Hashable k) => k -> MonoidalHashMap k a -> MonoidalHashMap k a
-delete k = _Wrapping' MM %~ M.delete k
+delete k = _Wrapping' MonoidalHashMap %~ M.delete k
 {-# INLINE delete #-}
 
 -- | /O(n)/.
