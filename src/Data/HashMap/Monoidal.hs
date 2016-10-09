@@ -16,7 +16,7 @@
 -- underlying 'Map'.
 
 module Data.HashMap.Monoidal
-    ( MonoidalHashMap
+    ( MonoidalHashMap(..)
       -- * Often-needed functions
     , toList
     , fromList

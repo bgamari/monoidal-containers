@@ -16,7 +16,7 @@
 -- underlying 'Map'.
 
 module Data.Map.Monoidal.Strict
-    ( MonoidalMap
+    ( MonoidalMap(..)
       -- * Often-needed functions
     , singleton
     , size
