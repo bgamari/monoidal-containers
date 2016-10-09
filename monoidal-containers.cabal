@@ -1,7 +1,19 @@
 name:                monoidal-containers
 version:             0.3.0.1
 synopsis:            Containers with monoidal accumulation
-description:         Containers with monoidal accumulation
+description:
+    Containers with merging via monoidal accumulation. The 'Monoid' instances
+    provided by the @containers@ and @unordered-containers@ packages merge
+    structures in a left-biased manner instead of using the underlying monoidal
+    structure of the value.
+    .
+    This package wraps the types provided by these packages, but provides @Monoid@
+    instances implemented in terms of the value type's 'mappend'. For instance,
+    the @Monoid@ @Map@ instance looks like,
+    .
+    @
+    instance (Ord k, Monoid a) => Monoid (MonoidalMap k a)
+    @
 homepage:            http://github.com/bgamari/monoidal-containers
 license:             BSD3
 license-file:        LICENSE
