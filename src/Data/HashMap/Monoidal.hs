@@ -38,7 +38,7 @@ module Data.HashMap.Monoidal
 
 import Prelude hiding (lookup, map)
 import Data.Maybe (fromMaybe)
-import Data.Monoid
+import Data.Semigroup
 import Data.Foldable (Foldable)
 import Control.Applicative (pure)
 import Data.Data (Data)
@@ -92,11 +92,17 @@ instance Wrapped (MonoidalHashMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance (Eq k, Hashable k, Semigroup a) => Semigroup (MonoidalHashMap k a) where
+    MonoidalHashMap a <> MonoidalHashMap b = MonoidalHashMap $ M.unionWith (<>) a b
+    {-# INLINE (<>) #-}
+
 instance (Eq k, Hashable k, Monoid a) => Monoid (MonoidalHashMap k a) where
     mempty = MonoidalHashMap mempty
     {-# INLINE mempty #-}
-    MonoidalHashMap a `mappend` MonoidalHashMap b = MonoidalHashMap $ M.unionWith mappend a b
+#if !(MIN_VERSION_base(4,11,0))
+    mappend (MonoidalHashMap a) (MonoidalHashMap b) = MonoidalHashMap $ M.unionWith mappend a b
     {-# INLINE mappend #-}
+#endif
 
 instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
     pack = MonoidalHashMap

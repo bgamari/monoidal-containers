@@ -28,7 +28,7 @@ module Data.Map.Monoidal
     , keys
     ) where
 
-import Data.Monoid
+import Data.Semigroup
 import Data.Foldable (Foldable)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
@@ -89,11 +89,17 @@ instance Wrapped (MonoidalMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance (Ord k, Semigroup a) => Semigroup (MonoidalMap k a) where
+    MonoidalMap a <> MonoidalMap b = MonoidalMap $ M.unionWith (<>) a b
+    {-# INLINE (<>) #-}
+
 instance (Ord k, Monoid a) => Monoid (MonoidalMap k a) where
     mempty = MonoidalMap mempty
     {-# INLINE mempty #-}
-    MonoidalMap a `mappend` MonoidalMap b = MonoidalMap $ M.unionWith mappend a b
+#if !(MIN_VERSION_base(4,11,0))
+    mappend (MonoidalMap a) (MonoidalMap b) = MonoidalMap $ M.unionWith mappend a b
     {-# INLINE mappend #-}
+#endif
 
 instance Newtype (MonoidalMap k a) (M.Map k a) where
     pack = MonoidalMap
