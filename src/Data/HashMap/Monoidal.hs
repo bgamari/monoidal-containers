@@ -30,6 +30,8 @@ module Data.HashMap.Monoidal
     , keys
     , delete
     , mapKeys
+    , insert
+    , insertOrReplace
     , modify
     , modifyDef
     , map
@@ -180,6 +182,28 @@ fromList = pack . M.fromListWith mappend
 toList :: MonoidalHashMap k a -> [(k,a)]
 toList = M.toList . unpack
 {-# INLINE toList #-}
+
+-- | /O(log n)/. Insert a value on some key, if it exists -- mappend
+-- to the existing one.
+insert :: (Semigroup a, Hashable k, Eq k)
+       => a
+       -> k
+       -> MonoidalHashMap k a
+       -> MonoidalHashMap k a
+insert x k = pack
+           . M.insertWith (<>) k x
+           . unpack
+
+-- | /O(log n)/. Insert a value on some key with a function, if value
+-- under key exists -- replace it.
+insertOrReplace :: (Semigroup a, Hashable k, Eq k)
+                => a
+                -> k
+                -> MonoidalHashMap k a
+                -> MonoidalHashMap k a
+insertOrReplace x k = pack
+                    . M.insert k x
+                    . unpack
 
 -- | /O(log n)/. Modify a value on some key with a function, if value
 -- under key doesn't exist -- use mempty.
