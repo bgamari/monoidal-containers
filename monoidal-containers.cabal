@@ -12,7 +12,7 @@ description:
     the @Monoid@ @Map@ instance looks like,
     .
     @
-    instance (Ord k, Monoid a) => Monoid (MonoidalMap k a)
+    instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a)
     @
 homepage:            http://github.com/bgamari/monoidal-containers
 license:             BSD3

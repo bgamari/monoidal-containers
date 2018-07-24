@@ -98,11 +98,11 @@ instance (Eq k, Hashable k, Semigroup a) => Semigroup (MonoidalHashMap k a) wher
     MonoidalHashMap a <> MonoidalHashMap b = MonoidalHashMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
 
-instance (Eq k, Hashable k, Monoid a) => Monoid (MonoidalHashMap k a) where
+instance (Eq k, Hashable k, Semigroup a) => Monoid (MonoidalHashMap k a) where
     mempty = MonoidalHashMap mempty
     {-# INLINE mempty #-}
 #if !(MIN_VERSION_base(4,11,0))
-    mappend (MonoidalHashMap a) (MonoidalHashMap b) = MonoidalHashMap $ M.unionWith mappend a b
+    mappend (MonoidalHashMap a) (MonoidalHashMap b) = MonoidalHashMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
 #endif
 
@@ -113,9 +113,9 @@ instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
     {-# INLINE unpack #-}
 
 #if MIN_VERSION_base(4,7,0)
-instance (Eq k, Hashable k, Monoid a) => Exts.IsList (MonoidalHashMap k a) where
+instance (Eq k, Hashable k, Semigroup a) => Exts.IsList (MonoidalHashMap k a) where
     type Item (MonoidalHashMap k a) = (k, a)
-    fromList = MonoidalHashMap . M.fromListWith mappend
+    fromList = MonoidalHashMap . M.fromListWith (<>)
     {-# INLINE fromList #-}
     toList = M.toList . unpack
     {-# INLINE toList #-}
@@ -173,8 +173,8 @@ keys = M.keys . unpack
 
 -- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
 -- contains duplicate mappings, values will be merged using (mappend newVal oldVal).
-fromList :: (Eq k, Hashable k, Monoid a) => [(k,a)] -> MonoidalHashMap k a
-fromList = pack . M.fromListWith mappend
+fromList :: (Eq k, Hashable k, Semigroup a) => [(k,a)] -> MonoidalHashMap k a
+fromList = pack . M.fromListWith (<>)
 {-# INLINE fromList #-}
 
 -- | /O(n*log n)/.  Return a list of this map's elements. The list is produced
@@ -218,7 +218,7 @@ modify f k = pack
 
 -- | /O(log n)/. Modify a value on some key with a function, providing
 -- a default value if that key doesn't exist.
-modifyDef :: (Monoid a, Hashable k, Eq k)
+modifyDef :: (Semigroup a, Hashable k, Eq k)
           => a -> (a -> a)
           -> k -> MonoidalHashMap k a
           -> MonoidalHashMap k a
@@ -229,7 +229,7 @@ modifyDef d f k = pack
 
 -- | /O(n)/. Map a function to each key of a map, if it will result
 -- in duplicated mappings, their values will be merged in unspecified order
-mapKeys :: (Monoid a, Hashable k, Eq k, Hashable k', Eq k')
+mapKeys :: (Semigroup a, Hashable k, Eq k, Hashable k', Eq k')
         => (k -> k') -> MonoidalHashMap k a -> MonoidalHashMap k' a
 mapKeys f = fromList
           . fmap (\(k, v) -> (f k, v))
