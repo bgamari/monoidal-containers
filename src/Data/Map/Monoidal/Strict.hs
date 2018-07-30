@@ -93,11 +93,11 @@ instance (Ord k, Semigroup a) => Semigroup (MonoidalMap k a) where
     MonoidalMap a <> MonoidalMap b = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
 
-instance (Ord k, Semigroup a, Monoid a) => Monoid (MonoidalMap k a) where
+instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a) where
     mempty = MonoidalMap mempty
     {-# INLINE mempty #-}
 #if !(MIN_VERSION_base(4,11,0))
-    mappend (MonoidalMap a) (MonoidalMap b) = MonoidalMap $ M.unionWith mappend a b
+    mappend (MonoidalMap a) (MonoidalMap b) = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
 #endif
 
@@ -108,9 +108,9 @@ instance Newtype (MonoidalMap k a) (M.Map k a) where
     {-# INLINE unpack #-}
 
 #if MIN_VERSION_base(4,7,0)
-instance (Ord k, Monoid a) => IsList (MonoidalMap k a) where
+instance (Ord k, Semigroup a) => IsList (MonoidalMap k a) where
     type Item (MonoidalMap k a) = (k, a)
-    fromList = MonoidalMap . M.fromListWith mappend
+    fromList = MonoidalMap . M.fromListWith (<>)
     {-# INLINE fromList #-}
     toList = M.toList . unpack
     {-# INLINE toList #-}
