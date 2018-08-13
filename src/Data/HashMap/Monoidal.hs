@@ -53,6 +53,7 @@ import qualified GHC.Exts as Exts
 import Control.DeepSeq
 import qualified Data.HashMap.Strict as M
 import Data.Hashable (Hashable)
+import Data.Hashable.Lifted (Hashable1)
 import Control.Lens
 import Control.Newtype
 
@@ -60,7 +61,7 @@ import Control.Newtype
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving (Show, Read, Functor, Eq, NFData,
               Foldable, Traversable,
-              Data, Typeable)
+              Data, Typeable, Hashable1, Hashable)
 
 type instance Index (MonoidalHashMap k a) = k
 type instance IxValue (MonoidalHashMap k a) = a
