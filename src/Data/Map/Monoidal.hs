@@ -218,7 +218,7 @@ instance (Ord k, Semigroup a) => IsList.IsList (MonoidalMap k a) where
 #endif
 
 -- | /O(1)/. A map with a single element.
-singleton :: Ord k => k -> a -> MonoidalMap k a
+singleton :: k -> a -> MonoidalMap k a
 singleton k a = MonoidalMap $ M.singleton k a
 {-# INLINE singleton #-}
 
