@@ -6,6 +6,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 -- | This module provides a 'Data.Map' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
@@ -144,12 +145,23 @@ import Control.DeepSeq
 import qualified Data.Map as M
 import Control.Lens
 import Control.Newtype
+import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
+#if MIN_VERSION_containers(0,5,9)
+import Data.Functor.Classes
+#endif
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
+              FromJSON, ToJSON, FromJSON1, ToJSON1,
               Data, Typeable)
+
+#if MIN_VERSION_containers(0,5,9)
+deriving instance (Ord k) => Eq1 (MonoidalMap k)
+deriving instance (Ord k) => Ord1 (MonoidalMap k)
+deriving instance (Show k) => Show1 (MonoidalMap k)
+#endif
 
 type instance Index (MonoidalMap k a) = k
 type instance IxValue (MonoidalMap k a) = a
