@@ -1,2 +1,5 @@
 dist
+dist-newstyle
 cabal.config
+cabal.project.local
+.ghc.environment.*
