@@ -146,7 +146,7 @@ import Control.DeepSeq
 import qualified Data.Map as M
 import Control.Lens
 import Control.Newtype
-import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
+import Data.Aeson(FromJSON(..), ToJSON(..))
 #if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
 #endif
@@ -155,7 +155,6 @@ import Data.Functor.Classes
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
-              FromJSON, ToJSON, FromJSON1, ToJSON1,
               Data, Typeable)
 
 #if MIN_VERSION_containers(0,5,9)
@@ -163,6 +162,14 @@ deriving instance (Ord k) => Eq1 (MonoidalMap k)
 deriving instance (Ord k) => Ord1 (MonoidalMap k)
 deriving instance (Show k) => Show1 (MonoidalMap k)
 #endif
+
+instance (ToJSON k, ToJSON m) => ToJSON (MonoidalMap k m) where
+  toJSON = toJSON . M.toList . getMonoidalMap
+
+instance (FromJSON k, FromJSON m, Ord k) => FromJSON (MonoidalMap k m) where
+  parseJSON r = do
+    res <- parseJSON r
+    fmap MonoidalMap . sequence . M.fromListWithKey (fail "duplicate key in JSON deserialization of MonoidalMap") . fmap (fmap return) $ res
 
 type instance Index (MonoidalMap k a) = k
 type instance IxValue (MonoidalMap k a) = a
