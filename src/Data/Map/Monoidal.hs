@@ -657,14 +657,6 @@ maxViewWithKey :: forall k a. MonoidalMap k a -> Maybe ((k, a), MonoidalMap k a)
 maxViewWithKey = coerce (M.maxViewWithKey :: M.Map k a -> Maybe ((k, a), M.Map k a))
 {-# INLINE maxViewWithKey #-}
 
--- showTree :: forall k a. (Show k, Show a) => MonoidalMap k a -> String
--- showTree = coerce (M.showTree :: (Show k, Show a) => M.Map k a -> String)
--- {-# INLINE showTree #-}
-
--- showTreeWith :: forall k a. (k -> a -> String) -> Bool -> Bool -> MonoidalMap k a -> String
--- showTreeWith = coerce (M.showTreeWith :: (k -> a -> String) -> Bool -> Bool -> M.Map k a -> String)
--- {-# INLINE showTreeWith #-}
-
 valid :: forall k a. Ord k => MonoidalMap k a -> Bool
 valid = coerce (M.valid :: Ord k => M.Map k a -> Bool)
 {-# INLINE valid #-}
