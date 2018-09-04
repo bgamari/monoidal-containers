@@ -53,15 +53,20 @@ import qualified GHC.Exts as Exts
 import Control.DeepSeq
 import qualified Data.HashMap.Strict as M
 import Data.Hashable (Hashable)
+#if MIN_VERSION_unordered_containers(0,2,8)
 import Data.Hashable.Lifted (Hashable1)
+#endif
 import Control.Lens
 import Control.Newtype
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
-    deriving (Show, Read, Functor, Eq, NFData,
-              Foldable, Traversable,
-              Data, Typeable, Hashable1, Hashable)
+    deriving ( Show, Read, Functor, Eq, NFData
+             , Foldable, Traversable, Data, Typeable, Hashable
+#if MIN_VERSION_unordered_containers(0,2,8)
+             , Hashable1
+#endif
+             )
 
 type instance Index (MonoidalHashMap k a) = k
 type instance IxValue (MonoidalHashMap k a) = a
