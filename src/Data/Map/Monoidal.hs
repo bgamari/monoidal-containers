@@ -9,7 +9,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 
 -- | This module provides a 'Data.Map' variant which uses the value's
--- 'Monoid' instance to accumulate conflicting entries when merging
+-- 'Semigroup' instance to accumulate conflicting entries when merging
 -- 'Map's.
 --
 -- While some functions mirroring those of 'Data.Map' are provided
@@ -122,8 +122,6 @@ module Data.Map.Monoidal
     , updateMinWithKey
     , updateWithKey
     , valid
-    -- , showTree
-    -- , showTreeWith
     ) where
 
 import Prelude hiding (null, lookup, map, foldl, foldr, filter)
