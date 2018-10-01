@@ -1,5 +1,10 @@
 # Monoidal containers
 
+# 0.4.1.0
+
+* Added support for `unordered-containers < 0.2.8`
+* Added many more functions in `Data.Map.[Strict.]Monoid`
+
 # 0.4.0.0
 
 Weakened `Monoid` constraints to `Semigroup` whenever possible as enabled by the
