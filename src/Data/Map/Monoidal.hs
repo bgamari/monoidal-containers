@@ -62,6 +62,7 @@ module Data.Map.Monoidal
     , fromAscListWith
     , fromAscListWithKey
     , fromDistinctAscList
+    , fromDistinctList
     , fromList
     , fromListWith
     , fromListWithKey
@@ -477,8 +478,8 @@ toList :: forall k a. MonoidalMap k a -> [(k, a)]
 toList = coerce (M.toList :: M.Map k a -> [(k, a)])
 {-# INLINE toList #-}
 
-fromList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
-fromList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
+fromList :: forall k a. (Ord k, Semigroup a) => [(k, a)] -> MonoidalMap k a
+fromList = fromListWith (<>)
 {-# INLINE fromList #-}
 
 fromListWith :: forall k a. Ord k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -497,8 +498,8 @@ toDescList :: forall k a. MonoidalMap k a -> [(k, a)]
 toDescList = coerce (M.toDescList :: M.Map k a -> [(k, a)])
 {-# INLINE toDescList #-}
 
-fromAscList :: forall k a. Eq k => [(k, a)] -> MonoidalMap k a
-fromAscList = coerce (M.fromAscList :: [(k, a)] -> M.Map k a)
+fromAscList :: forall k a. (Eq k, Semigroup a) => [(k, a)] -> MonoidalMap k a
+fromAscList = fromAscListWith (<>)
 {-# INLINE fromAscList #-}
 
 fromAscListWith :: forall k a. Eq k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -512,6 +513,10 @@ fromAscListWithKey = coerce (M.fromAscListWithKey :: (k -> a -> a -> a) -> [(k, 
 fromDistinctAscList :: forall k a. [(k, a)] -> MonoidalMap k a
 fromDistinctAscList = coerce (M.fromDistinctAscList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromDistinctAscList #-}
+
+fromDistinctList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
+fromDistinctList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
+{-# INLINE fromDistinctList #-}
 
 filter :: forall k a. (a -> Bool) -> MonoidalMap k a -> MonoidalMap k a
 filter = coerce (M.filter :: (a -> Bool) -> M.Map k a -> M.Map k a)
