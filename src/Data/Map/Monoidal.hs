@@ -128,6 +128,7 @@ module Data.Map.Monoidal
 
 import Prelude hiding (null, lookup, map, foldl, foldr, filter)
 
+import Data.Align
 import Data.Coerce (coerce)
 import Data.Set (Set)
 import Data.Semigroup
@@ -228,6 +229,13 @@ instance (Ord k, Semigroup a) => IsList.IsList (MonoidalMap k a) where
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance (Ord k) => Align (MonoidalMap k) where
+    nil = empty
+    align (MonoidalMap x) (MonoidalMap y) = MonoidalMap (align x y)
+    alignWith f (MonoidalMap x) (MonoidalMap y) = MonoidalMap (alignWith f x y)
+
+instance (Ord k) => Unalign (MonoidalMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: k -> a -> MonoidalMap k a
