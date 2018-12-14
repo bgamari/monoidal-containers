@@ -158,7 +158,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
               Data, Typeable)
 
 instance Functor (MonoidalMap k) where
-  fmap f = MonoidalMap . M.map f . getMonoidalMap
+  fmap f = coerce ((M.map :: (a -> b) -> M.Map k a -> M.Map k b) f)
   {-# INLINE fmap #-}
 
 #if MIN_VERSION_containers(0,5,9)
