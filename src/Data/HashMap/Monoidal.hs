@@ -58,11 +58,12 @@ import Data.Hashable.Lifted (Hashable1)
 #endif
 import Control.Lens
 import Control.Newtype
+import Data.Align
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving ( Show, Read, Functor, Eq, NFData
-             , Foldable, Traversable, Data, Typeable, Hashable
+             , Foldable, Traversable, Data, Typeable, Hashable, Align
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif

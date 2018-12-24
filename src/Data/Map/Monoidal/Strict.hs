@@ -149,13 +149,14 @@ import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 #if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
 #endif
+import Data.Align
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
-              Data, Typeable)
+              Data, Typeable, Align)
 
 #if MIN_VERSION_containers(0,5,9)
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
