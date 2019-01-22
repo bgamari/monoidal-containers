@@ -33,7 +33,9 @@ source-repository head
 library
   exposed-modules:     Data.Map.Monoidal
                        Data.HashMap.Monoidal
+                       Data.IntMap.Monoidal
                        Data.Map.Monoidal.Strict
+                       Data.IntMap.Monoidal.Strict
   other-extensions:    CPP,
                        MultiParamTypeClasses,
                        GeneralizedNewtypeDeriving,
