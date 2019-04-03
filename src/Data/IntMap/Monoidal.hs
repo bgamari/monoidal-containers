@@ -157,7 +157,11 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
-              Data, Typeable, Align)
+              Data, Typeable, Align
+#if MIN_VERSION_these(0,8,0)
+             , Semialign
+#endif
+             )
 
 #if MIN_VERSION_containers(0,5,9)
 deriving instance Eq1 MonoidalIntMap
@@ -317,8 +321,8 @@ empty :: forall a. MonoidalIntMap a
 empty = coerce (M.empty :: M.IntMap a)
 {-# INLINE empty #-}
 
-insert :: forall a. Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
-insert = coerce (M.insert :: Int -> a -> M.IntMap a -> M.IntMap a)
+insert :: forall a. Semigroup a => Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
+insert = coerce (M.insertWith (<>) :: Int -> a -> M.IntMap a -> M.IntMap a)
 {-# INLINE insert #-}
 
 insertWith :: forall a. (a -> a -> a) -> Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
@@ -417,8 +421,8 @@ mapAccumRWithKey :: forall a b c. (a -> Int -> b -> (a, c)) -> a -> MonoidalIntM
 mapAccumRWithKey = coerce (M.mapAccumRWithKey :: (a -> Int -> b -> (a, c)) -> a -> M.IntMap b -> (a, M.IntMap c))
 {-# INLINE mapAccumRWithKey #-}
 
-mapKeys :: forall a. (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
-mapKeys = coerce (M.mapKeys :: (Int -> Int) -> M.IntMap a -> M.IntMap a)
+mapKeys :: forall a. Semigroup a => (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
+mapKeys = coerce (M.mapKeysWith (<>) :: (Int -> Int) -> M.IntMap a -> M.IntMap a)
 {-# INLINE mapKeys #-}
 
 mapKeysWith :: forall a. (a -> a -> a) -> (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
@@ -577,26 +581,6 @@ isProperSubmapOfBy :: forall a b. (a -> b -> Bool) -> MonoidalIntMap a -> Monoid
 isProperSubmapOfBy = coerce (M.isProperSubmapOfBy :: (a -> b -> Bool) -> M.IntMap a -> M.IntMap b -> Bool)
 {-# INLINE isProperSubmapOfBy #-}
 
--- lookupIndex :: forall a. Ord k => k -> MonoidalIntMap a -> Maybe Int
--- lookupIndex = coerce (M.lookupIndex :: k -> M.IntMap a -> Maybe Int)
--- {-# INLINE lookupIndex #-}
-   
--- findIndex :: forall a. Ord k => k -> MonoidalIntMap a -> Int
--- findIndex = coerce (M.findIndex :: k -> M.IntMap a -> Int)
--- {-# INLINE findIndex #-}
-   
--- elemAt :: forall a. Int -> MonoidalIntMap a -> (Int, a)
--- elemAt = coerce (M.elemAt :: Int -> M.IntMap a -> (Int, a))
--- {-# INLINE elemAt #-}
-
--- updateAt :: forall a. (Int -> a -> Maybe a) -> Int -> MonoidalIntMap a -> MonoidalIntMap a
--- updateAt = coerce (M.updateAt :: (Int -> a -> Maybe a) -> Int -> M.IntMap a -> M.IntMap a)
--- {-# INLINE updateAt #-}
-   
--- deleteAt :: forall a. Int -> MonoidalIntMap a -> MonoidalIntMap a
--- deleteAt = coerce (M.deleteAt :: Int -> M.IntMap a -> M.IntMap a)
--- {-# INLINE deleteAt #-}
-
 findMin :: forall a. MonoidalIntMap a -> (Int, a)
 findMin = coerce (M.findMin :: M.IntMap a -> (Int, a))
 {-# INLINE findMin #-}
@@ -652,17 +636,4 @@ minViewWithKey = coerce (M.minViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.In
 maxViewWithKey :: forall a. MonoidalIntMap a -> Maybe ((Int, a), MonoidalIntMap a)
 maxViewWithKey = coerce (M.maxViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.IntMap a))
 {-# INLINE maxViewWithKey #-}
-
--- showTree :: forall a. (Show k, Show a) => MonoidalIntMap a -> String
--- showTree = coerce (M.showTree :: (Show k, Show a) => M.IntMap a -> String)
--- {-# INLINE showTree #-}
-
--- showTreeWith :: forall a. (Int -> a -> String) -> Bool -> Bool -> MonoidalIntMap a -> String
--- showTreeWith = coerce (M.showTreeWith :: (Int -> a -> String) -> Bool -> Bool -> M.IntMap a -> String)
--- {-# INLINE showTreeWith #-}
-
---valid :: forall a. Ord k => MonoidalIntMap a -> Bool
---valid = coerce (M.valid :: Ord k => M.IntMap a -> Bool)
---{-# INLINE valid #-}
-
 
