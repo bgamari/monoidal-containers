@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# Next
+
+  * Added `Control.Lens.Wrapped.Rewrapped` instances.
+
 # 0.6
 
   * Deprecates 0.5.* and reverts behavior of fromList, insert, mapKeys, etc. to match behavior in Data.Map. The only difference in behavior between Data.Map.Monoidal.MonoidalMap and Data.Map.Map is now the semigroup and monoid instances (as was the case in 0.4 and earlier).
