@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -134,7 +135,9 @@ import Data.Set (Set)
 import Data.Semigroup
 import Data.Foldable (Foldable)
 import Data.Functor.Apply (Apply)
+import Data.Functor.Alt (Alt(..))
 import Data.Functor.Bind (Bind)
+import Data.Functor.Plus (Plus(..))
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
@@ -217,6 +220,13 @@ instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a) where
     mappend (MonoidalMap a) (MonoidalMap b) = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
 #endif
+
+instance Ord k => Alt (MonoidalMap k) where
+  (<!>) :: forall k a. Ord k => MonoidalMap k a -> MonoidalMap k a -> MonoidalMap k a
+  (<!>) = coerce ((<!>) :: M.Map k a -> M.Map k a -> M.Map k a)
+
+instance Ord k => Plus (MonoidalMap k) where
+  zero = empty
 
 instance Newtype (MonoidalMap k a) (M.Map k a) where
     pack = MonoidalMap
