@@ -137,7 +137,7 @@ import Data.Foldable (Foldable)
 import Data.Functor.Apply (Apply)
 import Data.Functor.Alt (Alt(..))
 import Data.Functor.Bind (Bind)
-import Data.Functor.Plus (Plus(..))
+import Data.Functor.Plus (Plus)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
@@ -163,7 +163,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
-              Data, Typeable, Align, Apply, Bind)
+              Data, Typeable, Align, Apply, Bind, Plus)
 
 #if MIN_VERSION_containers(0,5,9)
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
@@ -225,9 +225,6 @@ instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a) where
 instance Ord k => Alt (MonoidalMap k) where
   (<!>) :: forall k a. Ord k => MonoidalMap k a -> MonoidalMap k a -> MonoidalMap k a
   (<!>) = coerce ((<!>) :: M.Map k a -> M.Map k a -> M.Map k a)
-
-instance Ord k => Plus (MonoidalMap k) where
-  zero = empty
 
 instance Newtype (MonoidalMap k a) (M.Map k a) where
     pack = MonoidalMap
