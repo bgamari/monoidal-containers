@@ -48,6 +48,7 @@ library
                        lens >=4.4 && <5,
                        newtype >=0.2 && <0.3,
                        semigroups >= 0.18 && < 0.19,
+                       semigroupoids >= 5.0 && < 5.4,
                        these
   hs-source-dirs:      src
   default-language:    Haskell2010

@@ -133,6 +133,8 @@ import Data.Coerce (coerce)
 import Data.Set (Set)
 import Data.Semigroup
 import Data.Foldable (Foldable)
+import Data.Functor.Apply (Apply)
+import Data.Functor.Bind (Bind)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
@@ -157,7 +159,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
-              Data, Typeable, Align)
+              Data, Typeable, Align, Apply, Bind)
 
 #if MIN_VERSION_containers(0,5,9)
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
@@ -666,5 +668,3 @@ maxViewWithKey = coerce (M.maxViewWithKey :: M.Map k a -> Maybe ((k, a), M.Map k
 valid :: forall k a. Ord k => MonoidalMap k a -> Bool
 valid = coerce (M.valid :: Ord k => M.Map k a -> Bool)
 {-# INLINE valid #-}
-
-

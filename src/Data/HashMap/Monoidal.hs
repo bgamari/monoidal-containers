@@ -42,6 +42,8 @@ import Prelude hiding (lookup, map)
 import Data.Maybe (fromMaybe)
 import Data.Semigroup
 import Data.Foldable (Foldable)
+import Data.Functor.Apply (Apply)
+import Data.Functor.Bind (Bind)
 import Control.Applicative (pure)
 import Data.Data (Data)
 import Data.Typeable (Typeable)
@@ -63,7 +65,7 @@ import Data.Align
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving ( Show, Read, Functor, Eq, NFData
-             , Foldable, Traversable, Data, Typeable, Hashable, Align
+             , Foldable, Traversable, Data, Typeable, Hashable, Align, Apply, Bind
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
