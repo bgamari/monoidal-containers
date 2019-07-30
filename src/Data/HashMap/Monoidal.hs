@@ -69,6 +69,9 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
+#if MIN_VERSION_these(0,8,0)
+             , Semialign
+#endif
              )
 
 type instance Index (MonoidalHashMap k a) = k
