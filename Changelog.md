@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# Unreleased
+
+* Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict
+
 # 0.4.0.0
 
 General changes:
