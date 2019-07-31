@@ -322,8 +322,8 @@ empty :: forall k a. MonoidalMap k a
 empty = coerce (M.empty :: M.Map k a)
 {-# INLINE empty #-}
 
-insert :: forall k a. Ord k => k -> a -> MonoidalMap k a -> MonoidalMap k a
-insert = coerce (M.insert :: k -> a -> M.Map k a -> M.Map k a)
+insert :: forall k a. (Ord k, Semigroup a) => k -> a -> MonoidalMap k a -> MonoidalMap k a
+insert = insertWith (<>)
 {-# INLINE insert #-}
 
 insertWith :: forall k a. Ord k => (a -> a -> a) -> k -> a -> MonoidalMap k a -> MonoidalMap k a
@@ -422,14 +422,32 @@ mapAccumRWithKey :: forall k a b c. (a -> k -> b -> (a, c)) -> a -> MonoidalMap 
 mapAccumRWithKey = coerce (M.mapAccumRWithKey :: (a -> k -> b -> (a, c)) -> a -> M.Map k b -> (a, M.Map k c))
 {-# INLINE mapAccumRWithKey #-}
 
-mapKeys :: forall k1 k2 a. Ord k2 => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
-mapKeys = coerce (M.mapKeys :: (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
+mapKeys :: forall k1 k2 a. (Ord k2, Semigroup a) => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
+mapKeys = mapKeysWith (<>)
 {-# INLINE mapKeys #-}
 
 mapKeysWith :: forall k1 k2 a. Ord k2 => (a -> a -> a) -> (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
 mapKeysWith = coerce (M.mapKeysWith :: (a -> a -> a) -> (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
 {-# INLINE mapKeysWith #-}
 
+-- | /O(n)/.
+-- @'mapKeysMonotonic' f s == 'mapKeys' f s@, but works only when @f@
+-- is strictly increasing (both monotonic and injective).
+-- That is, for any values @x@ and @y@, if @x@ < @y@ then @f x@ < @f y@
+-- and @f@ is injective (i.e. it never maps two input keys to the same output key).
+-- /The precondition is not checked./
+-- Semi-formally, we have:
+--
+-- > and [x < y ==> f x < f y | x <- ls, y <- ls]
+-- >                     ==> mapKeysMonotonic f s == mapKeys f s
+-- >     where ls = keys s
+--
+-- This means that @f@ maps distinct original keys to distinct resulting keys.
+-- This function has better performance than 'mapKeys'.
+--
+-- > mapKeysMonotonic (\ k -> k * 2) (fromList [(5,"a"), (3,"b")]) == fromList [(6, "b"), (10, "a")]
+-- > valid (mapKeysMonotonic (\ k -> k * 2) (fromList [(5,"a"), (3,"b")])) == True
+-- > valid (mapKeysMonotonic (\ _ -> 1)     (fromList [(5,"a"), (3,"b")])) == False
 mapKeysMonotonic :: forall k1 k2 a. (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
 mapKeysMonotonic = coerce (M.mapKeysMonotonic :: (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
 {-# INLINE mapKeysMonotonic #-}
