@@ -565,6 +565,10 @@ mapMaybeWithKey :: forall k a b. (k -> a -> Maybe b) -> MonoidalMap k a -> Monoi
 mapMaybeWithKey = coerce (M.mapMaybeWithKey :: (k -> a -> Maybe b) -> M.Map k a -> M.Map k b)
 {-# INLINE mapMaybeWithKey #-}
 
+traverseMaybeWithKey :: forall f k a b. Applicative f => (k -> a -> f (Maybe b)) -> MonoidalMap k a -> f (MonoidalMap k b)
+traverseMaybeWithKey f m = fmap coerce (M.traverseMaybeWithKey f (coerce m))
+{-# INLINE traverseMaybeWithKey #-}
+
 mapEither :: forall k a b c. (a -> Either b c) -> MonoidalMap k a -> (MonoidalMap k b, MonoidalMap k c)
 mapEither = coerce (M.mapEither :: (a -> Either b c) -> M.Map k a -> (M.Map k b, M.Map k c))
 {-# INLINE mapEither #-}
