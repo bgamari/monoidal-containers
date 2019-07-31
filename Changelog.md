@@ -1,7 +1,8 @@
 # Monoidal containers
 
-# 0.5.0.0
+# Unreleased
 
+  * Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict
   * Make `fromList`, `insert`, and `mapKeys` from `Data.Map.Monoidal` and `Data.Map.Monoidal.Strict` require `Semigroup` on values to properly capture monoidal behavior instead of reverting to the left-biased semantics of `Data.Map`.
   * Support `these` 0.8.0
 
