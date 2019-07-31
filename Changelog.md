@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# Unreleased
+
+  * Add `traverseMaybeWithKey`
+
 # 0.5.0.0
 
   * Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict

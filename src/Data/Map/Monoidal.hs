@@ -95,6 +95,7 @@ module Data.Map.Monoidal
     , mapKeysWith
     , mapMaybe
     , mapMaybeWithKey
+    , traverseMaybeWithKey
     , mapWithKey
     , maxView
     , maxViewWithKey
