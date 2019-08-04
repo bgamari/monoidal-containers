@@ -1,5 +1,10 @@
 # Monoidal containers
 
+# Next
+
+  * Support `these` 1.0.1.
+  * Add `SemialignWithIndex` instances.
+
 # 0.5.0.0
 
   * Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict

@@ -59,6 +59,7 @@ import Data.Hashable.Lifted (Hashable1)
 import Control.Lens
 import Control.Newtype
 import Data.Align
+import Data.Semialign.Indexed
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
@@ -67,9 +68,7 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
-#if MIN_VERSION_these(0,8,0)
              , Semialign
-#endif
              )
 
 type instance Index (MonoidalHashMap k a) = k
@@ -94,6 +93,8 @@ instance (Eq k, Hashable k) => FoldableWithIndex k (MonoidalHashMap k)
 instance (Eq k, Hashable k) => TraversableWithIndex k (MonoidalHashMap k) where
     itraverse f (MonoidalHashMap m) = fmap MonoidalHashMap $ itraverse f m
     {-# INLINE itraverse #-}
+
+instance (Eq k, Hashable k) => SemialignWithIndex k (MonoidalHashMap k)
 
 instance AsEmpty (MonoidalHashMap k a) where
     _Empty = nearly (MonoidalHashMap M.empty) (M.null . unpack)

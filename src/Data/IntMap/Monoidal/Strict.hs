@@ -151,16 +151,15 @@ import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 import Data.Functor.Classes
 #endif
 import Data.Align
+import Data.Semialign.Indexed
 
 -- | An 'IntMap' with monoidal accumulation
 newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
-              Data, Typeable, Align
-#if MIN_VERSION_these(0,8,0)
-              , Semialign
-#endif
+              Data, Typeable, Align,
+              Semialign
              )
 
 #if MIN_VERSION_containers(0,5,9)
@@ -191,6 +190,8 @@ instance FoldableWithIndex Int MonoidalIntMap
 instance TraversableWithIndex Int MonoidalIntMap where
     itraverse f (MonoidalIntMap m) = fmap MonoidalIntMap $ itraverse f m
     {-# INLINE itraverse #-}
+
+instance SemialignWithIndex Int MonoidalIntMap
 
 instance TraverseMin Int MonoidalIntMap  where
     traverseMin f (MonoidalIntMap m) = fmap MonoidalIntMap $ traverseMin f m
