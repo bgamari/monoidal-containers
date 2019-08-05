@@ -131,5 +131,9 @@ script:
   # Build without installed constraints for packages in global-db
   - if $UNCONSTRAINED; then rm -f cabal.project.local; echo cabal new-build -w ${HC} --disable-tests --disable-benchmarks all; else echo "Not building without installed constraints"; fi
 
+  # Build with split-these set to false
+  - cabal new-configure -f-split-these
+  - cabal new-build -w ${HC} ${TEST} ${BENCH} all
+
 # REGENDATA ["monoidal-containers.cabal"]
 # EOF
