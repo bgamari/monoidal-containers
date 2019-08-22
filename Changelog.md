@@ -1,5 +1,12 @@
 # Monoidal containers
 
+# 0.6
+
+  * Deprecates 0.5.* and reverts behavior of fromList, insert, mapKeys, etc. to match behavior in Data.Map. The only difference in behavior between Data.Map.Monoidal.MonoidalMap and Data.Map.Map is now the semigroup and monoid instances (as was the case in 0.4 and earlier).
+  * Fix the argument order of Data.HashMap.Monoidal.insert
+  * Remove Data.HashMap.Monoidal.insertOrReplace as it is now identical to Data.HashMap.Monoidal.insert
+  * Added Data.HashMap.Monoidal.insertWith and Data.HashMap.Monoidal.fromListWith
+
 # 0.5.0.1
 
   * Add a flag, `split-these`, to select whether to use the new "these"/"semialign" packages or the older combined "these" package.
