@@ -322,8 +322,8 @@ empty :: forall k a. MonoidalMap k a
 empty = coerce (M.empty :: M.Map k a)
 {-# INLINE empty #-}
 
-insert :: forall k a. (Ord k, Semigroup a) => k -> a -> MonoidalMap k a -> MonoidalMap k a
-insert = insertWith (<>)
+insert :: forall k a. Ord k => k -> a -> MonoidalMap k a -> MonoidalMap k a
+insert = coerce (M.insert :: k -> a -> M.Map k a -> M.Map k a)
 {-# INLINE insert #-}
 
 insertWith :: forall k a. Ord k => (a -> a -> a) -> k -> a -> MonoidalMap k a -> MonoidalMap k a

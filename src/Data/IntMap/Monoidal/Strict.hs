@@ -321,8 +321,8 @@ empty :: forall a. MonoidalIntMap a
 empty = coerce (M.empty :: M.IntMap a)
 {-# INLINE empty #-}
 
-insert :: forall a. Semigroup a => Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
-insert = coerce (M.insertWith (<>) :: Int -> a -> M.IntMap a -> M.IntMap a)
+insert :: forall a. Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
+insert = coerce (M.insert :: Int -> a -> M.IntMap a -> M.IntMap a)
 {-# INLINE insert #-}
 
 insertWith :: forall a. (a -> a -> a) -> Int -> a -> MonoidalIntMap a -> MonoidalIntMap a
@@ -421,8 +421,8 @@ mapAccumRWithKey :: forall a b c. (a -> Int -> b -> (a, c)) -> a -> MonoidalIntM
 mapAccumRWithKey = coerce (M.mapAccumRWithKey :: (a -> Int -> b -> (a, c)) -> a -> M.IntMap b -> (a, M.IntMap c))
 {-# INLINE mapAccumRWithKey #-}
 
-mapKeys :: forall a. Semigroup a => (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
-mapKeys = coerce (M.mapKeysWith (<>) :: (Int -> Int) -> M.IntMap a -> M.IntMap a)
+mapKeys :: forall a. (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
+mapKeys = coerce (M.mapKeys :: (Int -> Int) -> M.IntMap a -> M.IntMap a)
 {-# INLINE mapKeys #-}
 
 mapKeysWith :: forall a. (a -> a -> a) -> (Int -> Int) -> MonoidalIntMap a -> MonoidalIntMap a
@@ -481,8 +481,8 @@ toList :: forall a. MonoidalIntMap a -> [(Int, a)]
 toList = coerce (M.toList :: M.IntMap a -> [(Int, a)])
 {-# INLINE toList #-}
 
-fromList :: forall a. Semigroup a => [(Int, a)] -> MonoidalIntMap a
-fromList = fromListWith (<>)
+fromList :: forall a. [(Int, a)] -> MonoidalIntMap a
+fromList = coerce (M.fromList :: [(Int, a)] -> M.IntMap a)
 {-# INLINE fromList #-}
 
 fromListWith :: forall a. (a -> a -> a) -> [(Int, a)] -> MonoidalIntMap a
@@ -501,8 +501,8 @@ toDescList :: forall a. MonoidalIntMap a -> [(Int, a)]
 toDescList = coerce (M.toDescList :: M.IntMap a -> [(Int, a)])
 {-# INLINE toDescList #-}
 
-fromAscList :: forall a. Semigroup a => [(Int, a)] -> MonoidalIntMap a
-fromAscList = fromAscListWith (<>)
+fromAscList :: forall a. [(Int, a)] -> MonoidalIntMap a
+fromAscList = coerce (M.fromAscList :: [(Int, a)] -> M.IntMap a)
 {-# INLINE fromAscList #-}
 
 fromAscListWith :: forall a. (a -> a -> a) -> [(Int, a)] -> MonoidalIntMap a
