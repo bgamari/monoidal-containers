@@ -9,4 +9,4 @@ instances and utility functions to make them usable.
 
 ## Important Note
 
-This library is desinged to be a drop-in replacement for `Data.Map` and similar. Absolutely no other semantic changes are introduced in functions like `fromList` or `insert`. They are still left-biased like `Data.Map`'s. The only difference is in instances for `Semigroup`.
+This library is designed to be a drop-in replacement for `Data.Map` and similar. Absolutely no other semantic changes are introduced in functions like `fromList` or `insert`. They are still left-biased like `Data.Map`'s. The only difference is in instances for `Semigroup`.
