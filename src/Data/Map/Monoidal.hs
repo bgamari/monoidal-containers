@@ -208,6 +208,10 @@ instance Wrapped (MonoidalMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance Ord k => Rewrapped (M.Map k a) (MonoidalMap k a)
+
+instance Ord k => Rewrapped (MonoidalMap k a) (M.Map k a)
+
 instance (Ord k, Semigroup a) => Semigroup (MonoidalMap k a) where
     MonoidalMap a <> MonoidalMap b = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
