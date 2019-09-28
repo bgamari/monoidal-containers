@@ -6,6 +6,7 @@
   * Fix the argument order of Data.HashMap.Monoidal.insert
   * Remove Data.HashMap.Monoidal.insertOrReplace as it is now identical to Data.HashMap.Monoidal.insert
   * Added Data.HashMap.Monoidal.insertWith and Data.HashMap.Monoidal.fromListWith
+  * Only depend on `semigroups` on old GHC versions.
 
 # 0.5.0.1
 
