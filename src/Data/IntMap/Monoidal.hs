@@ -151,6 +151,11 @@ import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 import Data.Functor.Classes
 #endif
 import Data.Align
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,0,0)
+import Data.Semialign
+#endif
+#endif
 
 -- | An 'IntMap' with monoidal accumulation
 newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
@@ -160,6 +165,12 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
               Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
+#endif
+#ifdef MIN_VERSION_semialign
+             , Unalign
+#if MIN_VERSION_semialign(1,1,0)
+             , Zip
+#endif
 #endif
              )
 
@@ -186,7 +197,7 @@ instance At (MonoidalIntMap a) where
 
 instance Each (MonoidalIntMap a) (MonoidalIntMap b) a b
 
-instance FunctorWithIndex Int MonoidalIntMap 
+instance FunctorWithIndex Int MonoidalIntMap
 instance FoldableWithIndex Int MonoidalIntMap
 instance TraversableWithIndex Int MonoidalIntMap where
     itraverse f (MonoidalIntMap m) = fmap MonoidalIntMap $ itraverse f m
@@ -636,4 +647,3 @@ minViewWithKey = coerce (M.minViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.In
 maxViewWithKey :: forall a. MonoidalIntMap a -> Maybe ((Int, a), MonoidalIntMap a)
 maxViewWithKey = coerce (M.maxViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.IntMap a))
 {-# INLINE maxViewWithKey #-}
-
