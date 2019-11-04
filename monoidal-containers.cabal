@@ -1,5 +1,5 @@
 name:                monoidal-containers
-version:             0.6
+version:             0.5.0.1
 synopsis:            Containers with monoidal accumulation
 description:
     Containers with merging via monoidal accumulation. The 'Monoid' instances

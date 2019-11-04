@@ -323,8 +323,8 @@ empty :: forall k a. MonoidalMap k a
 empty = coerce (M.empty :: M.Map k a)
 {-# INLINE empty #-}
 
-insert :: forall k a. Ord k => k -> a -> MonoidalMap k a -> MonoidalMap k a
-insert = coerce (M.insert :: k -> a -> M.Map k a -> M.Map k a)
+insert :: forall k a. (Ord k, Semigroup a) => k -> a -> MonoidalMap k a -> MonoidalMap k a
+insert = insertWith (<>)
 {-# INLINE insert #-}
 
 insertWith :: forall k a. Ord k => (a -> a -> a) -> k -> a -> MonoidalMap k a -> MonoidalMap k a
@@ -423,8 +423,8 @@ mapAccumRWithKey :: forall k a b c. (a -> k -> b -> (a, c)) -> a -> MonoidalMap 
 mapAccumRWithKey = coerce (M.mapAccumRWithKey :: (a -> k -> b -> (a, c)) -> a -> M.Map k b -> (a, M.Map k c))
 {-# INLINE mapAccumRWithKey #-}
 
-mapKeys :: forall k1 k2 a. Ord k2 => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
-mapKeys = coerce (M.mapKeys :: (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
+mapKeys :: forall k1 k2 a. (Ord k2, Semigroup a) => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
+mapKeys = mapKeysWith (<>)
 {-# INLINE mapKeys #-}
 
 mapKeysWith :: forall k1 k2 a. Ord k2 => (a -> a -> a) -> (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
@@ -501,8 +501,8 @@ toList :: forall k a. MonoidalMap k a -> [(k, a)]
 toList = coerce (M.toList :: M.Map k a -> [(k, a)])
 {-# INLINE toList #-}
 
-fromList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
-fromList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
+fromList :: forall k a. (Ord k, Semigroup a) => [(k, a)] -> MonoidalMap k a
+fromList = fromListWith (<>)
 {-# INLINE fromList #-}
 
 fromListWith :: forall k a. Ord k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -521,8 +521,8 @@ toDescList :: forall k a. MonoidalMap k a -> [(k, a)]
 toDescList = coerce (M.toDescList :: M.Map k a -> [(k, a)])
 {-# INLINE toDescList #-}
 
-fromAscList :: forall k a. Eq k => [(k, a)] -> MonoidalMap k a
-fromAscList = coerce (M.fromAscList :: [(k, a)] -> M.Map k a)
+fromAscList :: forall k a. (Eq k, Semigroup a) => [(k, a)] -> MonoidalMap k a
+fromAscList = fromAscListWith (<>)
 {-# INLINE fromAscList #-}
 
 fromAscListWith :: forall k a. Eq k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
