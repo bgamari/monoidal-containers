@@ -20,7 +20,6 @@ module Data.HashMap.Monoidal
       -- * Often-needed functions
     , toList
     , fromList
-    , fromListWith
     , singleton
     , size
     , member
@@ -32,7 +31,7 @@ module Data.HashMap.Monoidal
     , delete
     , mapKeys
     , insert
-    , insertWith
+    , insertOrReplace
     , modify
     , modifyDef
     , map
@@ -126,7 +125,7 @@ instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
 #if MIN_VERSION_base(4,7,0)
 instance (Eq k, Hashable k, Semigroup a) => Exts.IsList (MonoidalHashMap k a) where
     type Item (MonoidalHashMap k a) = (k, a)
-    fromList = MonoidalHashMap . M.fromList
+    fromList = MonoidalHashMap . M.fromListWith (<>)
     {-# INLINE fromList #-}
     toList = M.toList . unpack
     {-# INLINE toList #-}
@@ -183,17 +182,10 @@ keys = M.keys . unpack
 {-# INLINE keys #-}
 
 -- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
--- contains duplicate mappings, values will be replaced.
-fromList :: (Eq k, Hashable k) => [(k,a)] -> MonoidalHashMap k a
-fromList = pack . M.fromList
+-- contains duplicate mappings, values will be merged using (mappend newVal oldVal).
+fromList :: (Eq k, Hashable k, Semigroup a) => [(k,a)] -> MonoidalHashMap k a
+fromList = pack . M.fromListWith (<>)
 {-# INLINE fromList #-}
-
--- | /O(n*log n)/. Construct a map with the supplied mappings. If the list
--- contains duplicate mappings, values will be merged using the provided combining function.
-fromListWith :: (Eq k, Hashable k) => (a -> a -> a) -> [(k,a)] -> MonoidalHashMap k a
-fromListWith f = pack . M.fromListWith f
-{-# INLINE fromListWith #-}
-
 
 -- | /O(n*log n)/.  Return a list of this map's elements. The list is produced
 -- lazily. The order of its elements is unspecified.
@@ -201,26 +193,27 @@ toList :: MonoidalHashMap k a -> [(k,a)]
 toList = M.toList . unpack
 {-# INLINE toList #-}
 
--- | /O(log n)/. Insert a value on some key, if it exists replace the value.
-insert :: (Hashable k, Eq k)
-       => k
-       -> a
+-- | /O(log n)/. Insert a value on some key, if it exists -- mappend
+-- to the existing one.
+insert :: (Semigroup a, Hashable k, Eq k)
+       => a
+       -> k
        -> MonoidalHashMap k a
        -> MonoidalHashMap k a
-insert k x = pack
-           . M.insert k x
+insert x k = pack
+           . M.insertWith (<>) k x
            . unpack
 
--- | /O(log n)/. Insert a value on some key, if it exists apply the combining function.
-insertWith :: (Hashable k, Eq k)
-       => (a -> a -> a)
-       -> k
-       -> a
-       -> MonoidalHashMap k a
-       -> MonoidalHashMap k a
-insertWith f k x = pack
-           . M.insertWith f k x
-           . unpack
+-- | /O(log n)/. Insert a value on some key with a function, if value
+-- under key exists -- replace it.
+insertOrReplace :: (Semigroup a, Hashable k, Eq k)
+                => a
+                -> k
+                -> MonoidalHashMap k a
+                -> MonoidalHashMap k a
+insertOrReplace x k = pack
+                    . M.insert k x
+                    . unpack
 
 -- | /O(log n)/. Modify a value on some key with a function, if value
 -- under key doesn't exist -- use mempty.
@@ -235,7 +228,7 @@ modify f k = pack
 
 -- | /O(log n)/. Modify a value on some key with a function, providing
 -- a default value if that key doesn't exist.
-modifyDef :: (Hashable k, Eq k)
+modifyDef :: (Semigroup a, Hashable k, Eq k)
           => a -> (a -> a)
           -> k -> MonoidalHashMap k a
           -> MonoidalHashMap k a
@@ -246,7 +239,7 @@ modifyDef d f k = pack
 
 -- | /O(n)/. Map a function to each key of a map, if it will result
 -- in duplicated mappings, their values will be merged in unspecified order
-mapKeys :: (Hashable k, Eq k, Hashable k', Eq k')
+mapKeys :: (Semigroup a, Hashable k, Eq k, Hashable k', Eq k')
         => (k -> k') -> MonoidalHashMap k a -> MonoidalHashMap k' a
 mapKeys f = fromList
           . fmap (\(k, v) -> (f k, v))
