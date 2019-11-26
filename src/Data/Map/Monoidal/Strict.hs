@@ -151,6 +151,11 @@ import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 import Data.Functor.Classes
 #endif
 import Data.Align
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+import Data.Zip (Zip)
+#endif
+#endif
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
@@ -160,6 +165,11 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
+#endif
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+             , Zip
+#endif
 #endif
              )
 

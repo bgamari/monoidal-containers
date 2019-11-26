@@ -60,6 +60,11 @@ import Data.Hashable.Lifted (Hashable1)
 import Control.Lens
 import Control.Newtype
 import Data.Align
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+import Data.Zip (Zip)
+#endif
+#endif
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
@@ -70,6 +75,11 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #endif
 #if MIN_VERSION_these(0,8,0)
              , Semialign
+#endif
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+             , Zip
+#endif
 #endif
              )
 
