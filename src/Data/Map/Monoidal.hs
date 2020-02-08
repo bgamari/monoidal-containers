@@ -156,6 +156,11 @@ import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 import Data.Functor.Classes
 #endif
 import Data.Align
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+import Data.Zip (Zip)
+#endif
+#endif
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
@@ -166,6 +171,11 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
+#endif
+#ifdef MIN_VERSION_semialign
+#if MIN_VERSION_semialign(1,1,0)
+             , Zip
+#endif
 #endif
              )
 
@@ -441,6 +451,24 @@ mapKeysWith :: forall k1 k2 a. Ord k2 => (a -> a -> a) -> (k1 -> k2) -> Monoidal
 mapKeysWith = coerce (M.mapKeysWith :: (a -> a -> a) -> (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
 {-# INLINE mapKeysWith #-}
 
+-- | /O(n)/.
+-- @'mapKeysMonotonic' f s == 'mapKeys' f s@, but works only when @f@
+-- is strictly increasing (both monotonic and injective).
+-- That is, for any values @x@ and @y@, if @x@ < @y@ then @f x@ < @f y@
+-- and @f@ is injective (i.e. it never maps two input keys to the same output key).
+-- /The precondition is not checked./
+-- Semi-formally, we have:
+--
+-- > and [x < y ==> f x < f y | x <- ls, y <- ls]
+-- >                     ==> mapKeysMonotonic f s == mapKeys f s
+-- >     where ls = keys s
+--
+-- This means that @f@ maps distinct original keys to distinct resulting keys.
+-- This function has better performance than 'mapKeys'.
+--
+-- > mapKeysMonotonic (\ k -> k * 2) (fromList [(5,"a"), (3,"b")]) == fromList [(6, "b"), (10, "a")]
+-- > valid (mapKeysMonotonic (\ k -> k * 2) (fromList [(5,"a"), (3,"b")])) == True
+-- > valid (mapKeysMonotonic (\ _ -> 1)     (fromList [(5,"a"), (3,"b")])) == False
 mapKeysMonotonic :: forall k1 k2 a. (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
 mapKeysMonotonic = coerce (M.mapKeysMonotonic :: (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
 {-# INLINE mapKeysMonotonic #-}
@@ -493,8 +521,8 @@ toList :: forall k a. MonoidalMap k a -> [(k, a)]
 toList = coerce (M.toList :: M.Map k a -> [(k, a)])
 {-# INLINE toList #-}
 
-fromList :: forall k a. (Ord k, Semigroup a) => [(k, a)] -> MonoidalMap k a
-fromList = fromListWith (<>)
+fromList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
+fromList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromList #-}
 
 fromListWith :: forall k a. Ord k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -513,8 +541,8 @@ toDescList :: forall k a. MonoidalMap k a -> [(k, a)]
 toDescList = coerce (M.toDescList :: M.Map k a -> [(k, a)])
 {-# INLINE toDescList #-}
 
-fromAscList :: forall k a. (Eq k, Semigroup a) => [(k, a)] -> MonoidalMap k a
-fromAscList = fromAscListWith (<>)
+fromAscList :: forall k a. Eq k => [(k, a)] -> MonoidalMap k a
+fromAscList = coerce (M.fromAscList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromAscList #-}
 
 fromAscListWith :: forall k a. Eq k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
