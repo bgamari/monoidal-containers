@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -133,6 +134,10 @@ import Data.Coerce (coerce)
 import Data.Set (Set)
 import Data.Semigroup
 import Data.Foldable (Foldable)
+import Data.Functor.Apply (Apply)
+import Data.Functor.Alt (Alt(..))
+import Data.Functor.Bind (Bind)
+import Data.Functor.Plus (Plus)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
@@ -162,6 +167,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving ( Show, Read, Functor, Eq, Ord, NFData
              , Foldable, Traversable
              , FromJSON, ToJSON, FromJSON1, ToJSON1
+             , Apply, Bind, Plus
              , Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
@@ -229,6 +235,10 @@ instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a) where
     mappend (MonoidalMap a) (MonoidalMap b) = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
 #endif
+
+instance Ord k => Alt (MonoidalMap k) where
+  (<!>) :: forall k a. Ord k => MonoidalMap k a -> MonoidalMap k a -> MonoidalMap k a
+  (<!>) = coerce ((<!>) :: M.Map k a -> M.Map k a -> M.Map k a)
 
 instance Newtype (MonoidalMap k a) (M.Map k a) where
     pack = MonoidalMap
@@ -698,5 +708,3 @@ maxViewWithKey = coerce (M.maxViewWithKey :: M.Map k a -> Maybe ((k, a), M.Map k
 valid :: forall k a. Ord k => MonoidalMap k a -> Bool
 valid = coerce (M.valid :: Ord k => M.Map k a -> Bool)
 {-# INLINE valid #-}
-
-

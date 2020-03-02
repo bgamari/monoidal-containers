@@ -1,5 +1,8 @@
 # Monoidal containers
 
+# Unreleased
+  * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap`/`MonoidalHashMap`/`MonoidalIntMap`
+
 # 0.6.0.1
 
   * Support semialign-1.1

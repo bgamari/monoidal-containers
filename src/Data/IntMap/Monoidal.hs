@@ -7,6 +7,9 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- | This module provides a 'Data.IntMap' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
@@ -133,6 +136,10 @@ import Data.Coerce (coerce)
 import Data.IntSet (IntSet)
 import Data.Semigroup
 import Data.Foldable (Foldable)
+import Data.Functor.Apply (Apply)
+import Data.Functor.Alt (Alt(..))
+import Data.Functor.Bind (Bind)
+import Data.Functor.Plus (Plus)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
@@ -162,6 +169,7 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
     deriving (Show, Read, Functor, Eq, Ord, NFData,
               Foldable, Traversable,
               FromJSON, ToJSON, FromJSON1, ToJSON1,
+              Apply, Bind, Plus,
               Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
@@ -196,7 +204,7 @@ instance At (MonoidalIntMap a) where
 
 instance Each (MonoidalIntMap a) (MonoidalIntMap b) a b
 
-instance FunctorWithIndex Int MonoidalIntMap 
+instance FunctorWithIndex Int MonoidalIntMap
 instance FoldableWithIndex Int MonoidalIntMap
 instance TraversableWithIndex Int MonoidalIntMap where
     itraverse f (MonoidalIntMap m) = fmap MonoidalIntMap $ itraverse f m
@@ -229,6 +237,10 @@ instance Semigroup a => Monoid (MonoidalIntMap a) where
     mappend (MonoidalIntMap a) (MonoidalIntMap b) = MonoidalIntMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
 #endif
+
+instance Alt (MonoidalIntMap) where
+  (<!>) :: forall a. MonoidalIntMap a -> MonoidalIntMap a -> MonoidalIntMap a
+  (<!>) = coerce ((<!>) :: M.IntMap a -> M.IntMap a -> M.IntMap a)
 
 instance Newtype (MonoidalIntMap a) (M.IntMap a) where
     pack = MonoidalIntMap
@@ -646,4 +658,3 @@ minViewWithKey = coerce (M.minViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.In
 maxViewWithKey :: forall a. MonoidalIntMap a -> Maybe ((Int, a), MonoidalIntMap a)
 maxViewWithKey = coerce (M.maxViewWithKey :: M.IntMap a -> Maybe ((Int, a), M.IntMap a))
 {-# INLINE maxViewWithKey #-}
-

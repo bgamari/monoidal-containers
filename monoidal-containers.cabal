@@ -54,12 +54,13 @@ library
                        hashable >= 1.2 && < 1.4,
                        lens >=4.4 && <5,
                        newtype >=0.2 && <0.3,
-                       semigroups >= 0.18 && < 0.20
+                       semigroups >= 0.18 && < 0.20,
+                       semigroupoids >= 5.0 && < 5.4
 
   if flag(split-these)
     build-depends:     these >= 1 && <1.1,
                        semialign >=1 && <1.2
-                    
+
   else
     build-depends:     these >= 0.7 && <0.9
 
