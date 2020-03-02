@@ -1,8 +1,8 @@
 # Monoidal containers
 
 # Unreleased
-  * Add `Apply` and `Bind` instances to `Map` and `HashMap`
-  * Add `Alt` and `Plus` instances to `Map`
+  * Add `Apply` and `Bind` instances to `MonoidalMap` and `MonoidalHashMap`
+  * Add `Alt` and `Plus` instances to `MonoidalMap`
   * Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict
 
 # 0.6.0.1
