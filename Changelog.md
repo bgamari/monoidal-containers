@@ -1,7 +1,7 @@
 # Monoidal containers
 
 # Unreleased
-  * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap` and `MonoidalHashMap`
+  * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap`/`MonoidalHashMap`/`MonoidalIntMap`
 
 # 0.6.0.1
 
