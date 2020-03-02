@@ -2,7 +2,6 @@
 
 # Unreleased
   * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap` and `MonoidalHashMap`
-  * Added Data.IntMap.Monoidal and Data.IntMap.Monoidal.Strict, corresponding to Data.IntMap and Data.IntMap.Strict
 
 # 0.6.0.1
 
