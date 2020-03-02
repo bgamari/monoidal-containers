@@ -71,7 +71,10 @@ import Data.Zip (Zip)
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving ( Show, Read, Functor, Eq, NFData
-             , Foldable, Traversable, Data, Typeable, Hashable, Align, Apply, Bind
+             , Foldable, Traversable, Data, Typeable, Hashable, Align
+#if MIN_VERSION_semigroupoids(5,2,1)
+             , Apply, Bind
+#endif
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
