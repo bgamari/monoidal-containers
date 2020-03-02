@@ -5,6 +5,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- | This module provides a 'Data.HashMap' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
@@ -40,11 +43,14 @@ module Data.HashMap.Monoidal
     ) where
 
 import Prelude hiding (lookup, map)
+import Data.Coerce (coerce)
 import Data.Maybe (fromMaybe)
 import Data.Semigroup
 import Data.Foldable (Foldable)
 import Data.Functor.Apply (Apply)
 import Data.Functor.Bind (Bind)
+import Data.Functor.Alt (Alt(..))
+import Data.Functor.Plus (Plus)
 import Control.Applicative (pure)
 import Data.Data (Data)
 import Data.Typeable (Typeable)
@@ -74,6 +80,9 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
              , Foldable, Traversable, Data, Typeable, Hashable, Align
 #if MIN_VERSION_semigroupoids(5,2,1)
              , Apply, Bind
+#endif
+#if MIN_VERSION_semigroupoids(5,3,3)
+             , Plus
 #endif
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
@@ -130,6 +139,12 @@ instance (Eq k, Hashable k, Semigroup a) => Monoid (MonoidalHashMap k a) where
 #if !(MIN_VERSION_base(4,11,0))
     mappend (MonoidalHashMap a) (MonoidalHashMap b) = MonoidalHashMap $ M.unionWith (<>) a b
     {-# INLINE mappend #-}
+#endif
+
+#if MIN_VERSION_semigroupoids(5,3,3)
+instance (Eq k, Hashable k) => Alt (MonoidalHashMap k) where
+  (<!>) :: forall k a. (Eq k, Hashable k) => MonoidalHashMap k a -> MonoidalHashMap k a -> MonoidalHashMap k a
+  (<!>) = coerce ((<!>) :: M.HashMap k a -> M.HashMap k a -> M.HashMap k a)
 #endif
 
 instance Newtype (MonoidalHashMap k a) (M.HashMap k a) where
