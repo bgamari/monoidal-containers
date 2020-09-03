@@ -146,7 +146,9 @@ import Control.DeepSeq
 import qualified Data.Map as M
 import Control.Lens
 import Control.Newtype
+#ifdef MIN_VERSION_aeson
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
+#endif
 #if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
 #endif
@@ -161,7 +163,9 @@ import Data.Zip (Zip)
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
     deriving ( Show, Read, Functor, Eq, Ord, NFData
              , Foldable, Traversable
+#ifdef AESON
              , FromJSON, ToJSON, FromJSON1, ToJSON1
+#endif
              , Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
              , Semialign
