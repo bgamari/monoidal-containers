@@ -152,6 +152,7 @@ import Data.Functor.Classes
 #endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
@@ -167,6 +168,7 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif

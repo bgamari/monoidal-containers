@@ -152,6 +152,7 @@ import Data.Functor.Classes
 #endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
@@ -167,6 +168,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif
@@ -697,5 +699,3 @@ maxViewWithKey = coerce (M.maxViewWithKey :: M.Map k a -> Maybe ((k, a), M.Map k
 valid :: forall k a. Ord k => MonoidalMap k a -> Bool
 valid = coerce (M.valid :: Ord k => M.Map k a -> Bool)
 {-# INLINE valid #-}
-
-

@@ -61,6 +61,7 @@ import Control.Lens
 import Control.Newtype
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
@@ -77,6 +78,7 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif
