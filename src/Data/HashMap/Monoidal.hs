@@ -66,6 +66,7 @@ import Data.Semialign (Unalign)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
@@ -83,6 +84,7 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
 type instance Index (MonoidalHashMap k a) = k
@@ -143,6 +145,8 @@ instance (Eq k, Hashable k, Semigroup a) => Exts.IsList (MonoidalHashMap k a) wh
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance (Eq k, Hashable k) => Witherable.Witherable (MonoidalHashMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: (Eq k, Hashable k) => k -> a -> MonoidalHashMap k a

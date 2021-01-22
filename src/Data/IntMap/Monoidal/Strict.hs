@@ -157,6 +157,7 @@ import Data.Semialign (Unalign)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | An 'IntMap' with monoidal accumulation
 newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
@@ -173,6 +174,7 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
 #if MIN_VERSION_containers(0,5,9)
@@ -246,6 +248,8 @@ instance Semigroup a => IsList.IsList (MonoidalIntMap a) where
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance Witherable.Witherable MonoidalIntMap
 
 -- | /O(1)/. A map with a single element.
 singleton :: Int -> a -> MonoidalIntMap a
