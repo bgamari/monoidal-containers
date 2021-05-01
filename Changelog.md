@@ -1,5 +1,7 @@
 # Monoidal containers
 
+  * Add instances of `Filterable` and `Witherable` from the `witherable` package
+
 # 0.6.0.1
 
   * Support semialign-1.1
