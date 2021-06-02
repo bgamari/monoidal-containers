@@ -57,7 +57,7 @@ library
                        semigroups >= 0.18 && < 0.20
 
   if flag(split-these)
-    build-depends:     these >= 1 && <1.2,
+    build-depends:     these >= 1 && <1.3,
                        semialign >=1 && <1.2
   else
     build-depends:     these >= 0.7 && <0.9
