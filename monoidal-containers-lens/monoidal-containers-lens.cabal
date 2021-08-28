@@ -1,0 +1,41 @@
+name:                monoidal-containers-lens
+version:             0.6.0.1
+synopsis:            Lens instances for containers with monoidal accumulation
+description:
+  'lens' instances for 'monoidal-containers'
+homepage:            http://github.com/bgamari/monoidal-containers
+license:             BSD3
+license-file:        LICENSE
+author:              Ben Gamari
+maintainer:          ben@smart-cactus.org
+copyright:           (c) 2014 Ben Gamari
+category:            Data
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  Changelog.md
+tested-with:         GHC ==7.8.4, GHC ==8.0.2, GHC ==8.2.2, GHC ==8.4.3, GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+
+source-repository head
+  type:                git
+  location:            git://github.com/bgamari/monoidal-containers
+
+library
+  exposed-modules:     Data.Map.Monoidal.Strict.Lens
+                       Data.Map.Monoidal.Lens
+                       Data.IntMap.Monoidal.Strict.Lens
+                       Data.IntMap.Monoidal.Lens
+                       Data.HashMap.Monoidal.Lens
+  default-extensions:    MultiParamTypeClasses,
+                       GeneralizedNewtypeDeriving,
+                       DeriveTraversable,
+                       DeriveDataTypeable,
+                       TypeFamilies,
+                       FlexibleInstances
+  build-depends:       base >=4.7 && <4.16,
+                       containers >=0.5 && <0.7,
+                       unordered-containers >= 0.2 && < 0.3,
+                       hashable >= 1.2 && < 1.4,
+                       lens >=4.4 && <5,
+                       monoidal-containers
+  hs-source-dirs:      src
+  default-language:    Haskell2010

@@ -17,7 +17,7 @@
 -- either the 'Newtype' or 'Wrapped' instances to manipulate the
 -- underlying 'Map'.
 
-module Data.IntMap.Monoidal.Strict
+module Data.IntMap.Monoidal
     ( MonoidalIntMap(..)
       -- * Often-needed functions
     , singleton
@@ -143,8 +143,7 @@ import qualified GHC.Exts as IsList
 #endif
 
 import Control.DeepSeq
-import qualified Data.IntMap.Strict as M
-import Control.Lens
+import qualified Data.IntMap as M
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 #if MIN_VERSION_containers(0,5,9)
@@ -180,45 +179,6 @@ deriving instance Eq1 MonoidalIntMap
 deriving instance Ord1 MonoidalIntMap
 deriving instance Show1 MonoidalIntMap
 #endif
-
-type instance Index (MonoidalIntMap a) = Int
-type instance IxValue (MonoidalIntMap a) = a
-instance Ixed (MonoidalIntMap a) where
-    ix k f (MonoidalIntMap m) = case M.lookup k m of
-      Just v  -> f v <&> \v' -> MonoidalIntMap (M.insert k v' m)
-      Nothing -> pure (MonoidalIntMap m)
-    {-# INLINE ix #-}
-
-instance At (MonoidalIntMap a) where
-    at k f (MonoidalIntMap m) = f mv <&> \r -> case r of
-      Nothing -> maybe (MonoidalIntMap m) (const (MonoidalIntMap $ M.delete k m)) mv
-      Just v' -> MonoidalIntMap $ M.insert k v' m
-      where mv = M.lookup k m
-    {-# INLINE at #-}
-
-instance Each (MonoidalIntMap a) (MonoidalIntMap b) a b
-
-instance FunctorWithIndex Int MonoidalIntMap 
-instance FoldableWithIndex Int MonoidalIntMap
-instance TraversableWithIndex Int MonoidalIntMap where
-    itraverse f (MonoidalIntMap m) = fmap MonoidalIntMap $ itraverse f m
-    {-# INLINE itraverse #-}
-
-instance TraverseMin Int MonoidalIntMap  where
-    traverseMin f (MonoidalIntMap m) = fmap MonoidalIntMap $ traverseMin f m
-    {-# INLINE traverseMin #-}
-instance TraverseMax Int MonoidalIntMap where
-    traverseMax f (MonoidalIntMap m) = fmap MonoidalIntMap $ traverseMax f m
-    {-# INLINE traverseMax #-}
-
-instance AsEmpty (MonoidalIntMap a) where
-    _Empty = nearly (MonoidalIntMap M.empty) (M.null . unpack)
-    {-# INLINE _Empty #-}
-
-instance Wrapped (MonoidalIntMap a) where
-    type Unwrapped (MonoidalIntMap a) = M.IntMap a
-    _Wrapped' = iso unpack pack
-    {-# INLINE _Wrapped' #-}
 
 instance Semigroup a => Semigroup (MonoidalIntMap a) where
     MonoidalIntMap a <> MonoidalIntMap b = MonoidalIntMap $ M.unionWith (<>) a b
@@ -277,7 +237,7 @@ findWithDefault def k = M.findWithDefault def k . unpack
 -- | /O(log n)/. Delete a key and its value from the map. When the key is not
 -- a member of the map, the original map is returned.
 delete :: Int -> MonoidalIntMap a -> MonoidalIntMap a
-delete k = _Wrapping' MonoidalIntMap %~ M.delete k
+delete k = MonoidalIntMap . M.delete k . getMonoidalIntMap
 {-# INLINE delete #-}
 
 -- | /O(n)/. Return all elements of the map and their keys
@@ -418,7 +378,7 @@ mapWithKey = coerce (M.mapWithKey :: (Int -> a -> b) -> M.IntMap a -> M.IntMap b
 {-# INLINE mapWithKey #-}
 
 traverseWithKey :: Applicative t => (Int -> a -> t b) -> MonoidalIntMap a -> t (MonoidalIntMap b)
-traverseWithKey = itraverse
+traverseWithKey f = fmap MonoidalIntMap . M.traverseWithKey f . getMonoidalIntMap
 {-# INLINE traverseWithKey #-}
 
 mapAccum :: forall a b c. (a -> b -> (a, c)) -> a -> MonoidalIntMap b -> (a, MonoidalIntMap c)
