@@ -58,7 +58,7 @@ library
 
   if flag(split-these)
     build-depends:     these >= 1 && <1.2,
-                       semialign >=1 && <1.2
+                       semialign >=1 && <1.3
   else
     build-depends:     these >= 0.7 && <0.9
 
