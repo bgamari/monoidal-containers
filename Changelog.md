@@ -2,16 +2,16 @@
 
 # 0.6.1.0
 
+  * Drop official support for GHC 7.8.4
   * Require containers 0.5.9 or greater.
+  * Support lens-5, semialign-1.2, and aeson-2
   * MonoidalMap and MonoidalMap.Strict: Add several functions added to Data.Map since 0.5 up to 0.5.9:
     `take`, `drop`, `splitAt`, `lookupMin`, `lookupMax`, `restrictKeys`,
     `withoutKeys`, `fromDescList`,  `fromDescListWith`, `fromDescListWithKey`,
     `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
     `spanAntitone`, and `traverseMaybeWithKey`
-  * Support lens-5 and semialign-1.2
-  * Drop official support for GHC 7.8.4
   * Add instances of `Filterable` and `Witherable` from the `witherable` package
-  * Added `Control.Lens.Wrapped.Rewrapped` instances.
+  * Add `Control.Lens.Wrapped.Rewrapped` instances.
   
 # 0.6.0.1
 
