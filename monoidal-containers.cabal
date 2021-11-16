@@ -1,34 +1,36 @@
-name:                monoidal-containers
-version:             0.6.1.0
-synopsis:            Containers with monoidal accumulation
+name:               monoidal-containers
+version:            0.6.1.0
+synopsis:           Containers with monoidal accumulation
 description:
-    Containers with merging via monoidal accumulation. The 'Monoid' instances
-    provided by the @containers@ and @unordered-containers@ packages merge
-    structures in a left-biased manner instead of using the underlying monoidal
-    structure of the value.
-    .
-    This package wraps the types provided by these packages, but provides @Monoid@
-    instances implemented in terms of the value type's 'mappend'. For instance,
-    the @Monoid@ @Map@ instance looks like,
-    .
-    @
-    instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a)
-    @
-homepage:            http://github.com/bgamari/monoidal-containers
-license:             BSD3
-license-file:        LICENSE
-author:              Ben Gamari
-maintainer:          ben@smart-cactus.org
-copyright:           (c) 2014 Ben Gamari
-category:            Data
-build-type:          Simple
-cabal-version:       >=1.10
-extra-source-files:  Changelog.md
-tested-with:         GHC ==8.0.2, GHC ==8.2.2, GHC ==8.4.4, GHC ==8.6.5, GHC ==8.8.4, GHC ==8.10.2
+  Containers with merging via monoidal accumulation. The 'Monoid' instances
+  provided by the @containers@ and @unordered-containers@ packages merge
+  structures in a left-biased manner instead of using the underlying monoidal
+  structure of the value.
+  .
+  This package wraps the types provided by these packages, but provides @Monoid@
+  instances implemented in terms of the value type's 'mappend'. For instance,
+  the @Monoid@ @Map@ instance looks like,
+  .
+  @
+  instance (Ord k, Semigroup a) => Monoid (MonoidalMap k a)
+  @
+
+homepage:           http://github.com/bgamari/monoidal-containers
+license:            BSD3
+license-file:       LICENSE
+author:             Ben Gamari
+maintainer:         ben@smart-cactus.org
+copyright:          (c) 2014 Ben Gamari
+category:           Data
+build-type:         Simple
+cabal-version:      >=1.10
+extra-source-files: Changelog.md
+tested-with:
+  GHC ==8.0.2 || ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.4 || ==8.10.2
 
 source-repository head
-  type:                git
-  location:            git://github.com/bgamari/monoidal-containers
+  type:     git
+  location: git://github.com/bgamari/monoidal-containers
 
 flag split-these
   description: Use split these/semialign packages
@@ -36,31 +38,38 @@ flag split-these
   default:     True
 
 library
-  exposed-modules:     Data.Map.Monoidal
-                       Data.HashMap.Monoidal
-                       Data.IntMap.Monoidal
-                       Data.Map.Monoidal.Strict
-                       Data.IntMap.Monoidal.Strict
-  other-extensions:    CPP,
-                       MultiParamTypeClasses,
-                       GeneralizedNewtypeDeriving,
-                       DeriveTraversable,
-                       DeriveDataTypeable
-  build-depends:       base >=4.7 && <4.16,
-                       aeson >=1.0 && <2.1,
-                       containers >=0.5.9 && <0.7,
-                       deepseq >=1.3 && <1.5,
-                       unordered-containers >= 0.2 && < 0.3,
-                       hashable >= 1.2 && < 1.4,
-                       lens >=4.4 && <5.1,
-                       newtype >=0.2 && <0.3,
-                       witherable >= 0.4 && <0.5
+  exposed-modules:
+    Data.HashMap.Monoidal
+    Data.IntMap.Monoidal
+    Data.IntMap.Monoidal.Strict
+    Data.Map.Monoidal
+    Data.Map.Monoidal.Strict
+
+  other-extensions:
+    CPP
+    DeriveDataTypeable
+    DeriveTraversable
+    GeneralizedNewtypeDeriving
+    MultiParamTypeClasses
+
+  build-depends:
+      aeson                 >=1.0   && <2.1
+    , base                  >=4.7   && <4.16
+    , containers            >=0.5.9 && <0.7
+    , deepseq               >=1.3   && <1.5
+    , hashable              >=1.2   && <1.4
+    , lens                  >=4.4   && <5.1
+    , newtype               >=0.2   && <0.3
+    , unordered-containers  >=0.2   && <0.3
+    , witherable            >=0.4   && <0.5
 
   if flag(split-these)
-    build-depends:     these >= 1 && <1.2,
-                       semialign >=1 && <1.3
-  else
-    build-depends:     these >= 0.7 && <0.9
+    build-depends:
+        semialign  >=1 && <1.3
+      , these      >=1 && <1.2
 
-  hs-source-dirs:      src
-  default-language:    Haskell2010
+  else
+    build-depends: these >=0.7 && <0.9
+
+  hs-source-dirs:   src
+  default-language: Haskell2010
