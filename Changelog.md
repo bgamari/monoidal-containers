@@ -9,7 +9,8 @@
     `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
     `spanAntitone`, and `traverseMaybeWithKey`
   * Support lens-5 and semialign-1.2
-
+  * Add instances of `Filterable` and `Witherable` from the `witherable` package
+  
 # 0.6.0.1
 
   * Support semialign-1.1

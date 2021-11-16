@@ -171,6 +171,7 @@ import Data.Semialign (Unalign)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
@@ -187,6 +188,7 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
@@ -258,6 +260,8 @@ instance (Ord k, Semigroup a) => IsList.IsList (MonoidalMap k a) where
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance Ord k => Witherable.Witherable (MonoidalMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: k -> a -> MonoidalMap k a
