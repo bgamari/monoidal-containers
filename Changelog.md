@@ -8,6 +8,7 @@
     `withoutKeys`, `fromDescList`,  `fromDescListWith`, `fromDescListWithKey`,
     `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
     `spanAntitone`, and `traverseMaybeWithKey`
+  * Support lens-5 and semialign-1.2
 
 # 0.6.0.1
 
