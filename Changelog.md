@@ -9,6 +9,7 @@
     `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
     `spanAntitone`, and `traverseMaybeWithKey`
   * Support lens-5 and semialign-1.2
+  * Drop official support for GHC 7.8.4
   * Add instances of `Filterable` and `Witherable` from the `witherable` package
   
 # 0.6.0.1
