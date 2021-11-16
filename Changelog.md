@@ -11,6 +11,7 @@
   * Support lens-5 and semialign-1.2
   * Drop official support for GHC 7.8.4
   * Add instances of `Filterable` and `Witherable` from the `witherable` package
+  * Added `Control.Lens.Wrapped.Rewrapped` instances.
   
 # 0.6.0.1
 

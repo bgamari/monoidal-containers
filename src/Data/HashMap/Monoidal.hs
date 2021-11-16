@@ -119,6 +119,10 @@ instance Wrapped (MonoidalHashMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance (Eq k, Hashable k) => Rewrapped (M.HashMap k a) (MonoidalHashMap k a)
+
+instance (Eq k, Hashable k) => Rewrapped (MonoidalHashMap k a) (M.HashMap k a)
+
 instance (Eq k, Hashable k, Semigroup a) => Semigroup (MonoidalHashMap k a) where
     MonoidalHashMap a <> MonoidalHashMap b = MonoidalHashMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
