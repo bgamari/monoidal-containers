@@ -57,7 +57,6 @@ import Data.Hashable (Hashable)
 #if MIN_VERSION_unordered_containers(0,2,8)
 import Data.Hashable.Lifted (Hashable1)
 #endif
-import Control.Lens
 import Control.Newtype
 import Data.Align
 #ifdef MIN_VERSION_semialign
@@ -84,38 +83,6 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #endif
 #endif
              )
-
-type instance Index (MonoidalHashMap k a) = k
-type instance IxValue (MonoidalHashMap k a) = a
-instance (Eq k, Hashable k) => Ixed (MonoidalHashMap k a) where
-    ix k f (MonoidalHashMap m) = case M.lookup k m of
-      Just v  -> f v <&> \v' -> MonoidalHashMap (M.insert k v' m)
-      Nothing -> pure (MonoidalHashMap m)
-    {-# INLINE ix #-}
-
-instance (Eq k, Hashable k) => At (MonoidalHashMap k a) where
-    at k f (MonoidalHashMap m) = f mv <&> \r -> case r of
-      Nothing -> maybe (MonoidalHashMap m) (const (MonoidalHashMap $ M.delete k m)) mv
-      Just v' -> MonoidalHashMap $ M.insert k v' m
-      where mv = M.lookup k m
-    {-# INLINE at #-}
-
-instance Each (MonoidalHashMap k a) (MonoidalHashMap k b) a b
-
-instance (Eq k, Hashable k) => FunctorWithIndex k (MonoidalHashMap k)
-instance (Eq k, Hashable k) => FoldableWithIndex k (MonoidalHashMap k)
-instance (Eq k, Hashable k) => TraversableWithIndex k (MonoidalHashMap k) where
-    itraverse f (MonoidalHashMap m) = fmap MonoidalHashMap $ itraverse f m
-    {-# INLINE itraverse #-}
-
-instance AsEmpty (MonoidalHashMap k a) where
-    _Empty = nearly (MonoidalHashMap M.empty) (M.null . unpack)
-    {-# INLINE _Empty #-}
-
-instance Wrapped (MonoidalHashMap k a) where
-    type Unwrapped (MonoidalHashMap k a) = M.HashMap k a
-    _Wrapped' = iso unpack pack
-    {-# INLINE _Wrapped' #-}
 
 instance (Eq k, Hashable k, Semigroup a) => Semigroup (MonoidalHashMap k a) where
     MonoidalHashMap a <> MonoidalHashMap b = MonoidalHashMap $ M.unionWith (<>) a b
@@ -179,7 +146,7 @@ lookupM k = fromMaybe mempty . M.lookup k . unpack
 -- | /O(log n)/. Delete a key and its value from the map. When the key is not
 -- a member of the map, the original map is returned.
 delete :: (Eq k, Hashable k) => k -> MonoidalHashMap k a -> MonoidalHashMap k a
-delete k = _Wrapping' MonoidalHashMap %~ M.delete k
+delete k = MonoidalHashMap . M.delete k . getMonoidalHashMap
 {-# INLINE delete #-}
 
 -- | /O(n)/.

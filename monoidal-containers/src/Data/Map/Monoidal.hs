@@ -1,11 +1,11 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
 -- | This module provides a 'Data.Map' variant which uses the value's
@@ -17,7 +17,7 @@
 -- either the 'Newtype' or 'Wrapped' instances to manipulate the
 -- underlying 'Map'.
 
-module Data.Map.Monoidal.Strict
+module Data.Map.Monoidal
     ( MonoidalMap(..)
       -- * Often-needed functions
     , singleton
@@ -130,21 +130,20 @@ module Data.Map.Monoidal.Strict
 import Prelude hiding (null, lookup, map, foldl, foldr, filter)
 
 import Data.Coerce (coerce)
+import Data.Set (Set)
 import Data.Semigroup
 import Data.Foldable (Foldable)
 import Data.Traversable (Traversable)
 import Control.Applicative (Applicative, pure)
 import Data.Data (Data)
 import Data.Typeable (Typeable)
-import Data.Set (Set)
 
 #if MIN_VERSION_base(4,7,0)
-import qualified GHC.Exts  as IsList
+import qualified GHC.Exts as IsList
 #endif
 
 import Control.DeepSeq
-import qualified Data.Map.Strict as M
-import Control.Lens
+import qualified Data.Map as M
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
 #if MIN_VERSION_containers(0,5,9)
@@ -180,45 +179,6 @@ deriving instance (Ord k) => Eq1 (MonoidalMap k)
 deriving instance (Ord k) => Ord1 (MonoidalMap k)
 deriving instance (Show k) => Show1 (MonoidalMap k)
 #endif
-
-type instance Index (MonoidalMap k a) = k
-type instance IxValue (MonoidalMap k a) = a
-instance Ord k => Ixed (MonoidalMap k a) where
-    ix k f (MonoidalMap m) = case M.lookup k m of
-      Just v  -> f v <&> \v' -> MonoidalMap (M.insert k v' m)
-      Nothing -> pure (MonoidalMap m)
-    {-# INLINE ix #-}
-
-instance Ord k => At (MonoidalMap k a) where
-    at k f (MonoidalMap m) = f mv <&> \r -> case r of
-      Nothing -> maybe (MonoidalMap m) (const (MonoidalMap $ M.delete k m)) mv
-      Just v' -> MonoidalMap $ M.insert k v' m
-      where mv = M.lookup k m
-    {-# INLINE at #-}
-
-instance Each (MonoidalMap k a) (MonoidalMap k b) a b
-
-instance FunctorWithIndex k (MonoidalMap k)
-instance FoldableWithIndex k (MonoidalMap k)
-instance TraversableWithIndex k (MonoidalMap k) where
-    itraverse f (MonoidalMap m) = fmap MonoidalMap $ itraverse f m
-    {-# INLINE itraverse #-}
-
-instance Ord k => TraverseMin k (MonoidalMap k) where
-    traverseMin f (MonoidalMap m) = fmap MonoidalMap $ traverseMin f m
-    {-# INLINE traverseMin #-}
-instance Ord k => TraverseMax k (MonoidalMap k) where
-    traverseMax f (MonoidalMap m) = fmap MonoidalMap $ traverseMax f m
-    {-# INLINE traverseMax #-}
-
-instance AsEmpty (MonoidalMap k a) where
-    _Empty = nearly (MonoidalMap M.empty) (M.null . unpack)
-    {-# INLINE _Empty #-}
-
-instance Wrapped (MonoidalMap k a) where
-    type Unwrapped (MonoidalMap k a) = M.Map k a
-    _Wrapped' = iso unpack pack
-    {-# INLINE _Wrapped' #-}
 
 instance (Ord k, Semigroup a) => Semigroup (MonoidalMap k a) where
     MonoidalMap a <> MonoidalMap b = MonoidalMap $ M.unionWith (<>) a b
@@ -277,7 +237,7 @@ findWithDefault def k = M.findWithDefault def k . unpack
 -- | /O(log n)/. Delete a key and its value from the map. When the key is not
 -- a member of the map, the original map is returned.
 delete :: Ord k => k -> MonoidalMap k a -> MonoidalMap k a
-delete k = _Wrapping' MonoidalMap %~ M.delete k
+delete k = MonoidalMap . M.delete k . getMonoidalMap
 {-# INLINE delete #-}
 
 -- | /O(n)/. Return all elements of the map and their keys
@@ -296,6 +256,7 @@ elems = M.elems . unpack
 keys :: MonoidalMap k a -> [k]
 keys = M.keys . unpack
 {-# INLINE keys #-}
+
 
 
 (!) :: forall k a. Ord k => MonoidalMap k a -> k -> a
@@ -419,7 +380,7 @@ mapWithKey = coerce (M.mapWithKey :: (k -> a -> b) -> M.Map k a -> M.Map k b)
 {-# INLINE mapWithKey #-}
 
 traverseWithKey :: Applicative t => (k -> a -> t b) -> MonoidalMap k a -> t (MonoidalMap k b)
-traverseWithKey = itraverse
+traverseWithKey f = fmap MonoidalMap . M.traverseWithKey f . getMonoidalMap
 {-# INLINE traverseWithKey #-}
 
 mapAccum :: forall k a b c. (a -> b -> (a, c)) -> a -> MonoidalMap k b -> (a, MonoidalMap k c)
@@ -434,8 +395,8 @@ mapAccumRWithKey :: forall k a b c. (a -> k -> b -> (a, c)) -> a -> MonoidalMap 
 mapAccumRWithKey = coerce (M.mapAccumRWithKey :: (a -> k -> b -> (a, c)) -> a -> M.Map k b -> (a, M.Map k c))
 {-# INLINE mapAccumRWithKey #-}
 
-mapKeys :: forall k1 k2 a. (Ord k2, Semigroup a) => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
-mapKeys = mapKeysWith (<>)
+mapKeys :: forall k1 k2 a. Ord k2 => (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
+mapKeys = coerce (M.mapKeys :: (k1 -> k2) -> M.Map k1 a -> M.Map k2 a)
 {-# INLINE mapKeys #-}
 
 mapKeysWith :: forall k1 k2 a. Ord k2 => (a -> a -> a) -> (k1 -> k2) -> MonoidalMap k1 a -> MonoidalMap k2 a
@@ -512,8 +473,8 @@ toList :: forall k a. MonoidalMap k a -> [(k, a)]
 toList = coerce (M.toList :: M.Map k a -> [(k, a)])
 {-# INLINE toList #-}
 
-fromList :: forall k a. (Ord k, Semigroup a) => [(k, a)] -> MonoidalMap k a
-fromList = fromListWith (<>)
+fromList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
+fromList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromList #-}
 
 fromListWith :: forall k a. Ord k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -532,8 +493,8 @@ toDescList :: forall k a. MonoidalMap k a -> [(k, a)]
 toDescList = coerce (M.toDescList :: M.Map k a -> [(k, a)])
 {-# INLINE toDescList #-}
 
-fromAscList :: forall k a. (Eq k, Semigroup a) => [(k, a)] -> MonoidalMap k a
-fromAscList = fromAscListWith (<>)
+fromAscList :: forall k a. Eq k => [(k, a)] -> MonoidalMap k a
+fromAscList = coerce (M.fromAscList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromAscList #-}
 
 fromAscListWith :: forall k a. Eq k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
@@ -699,3 +660,5 @@ maxViewWithKey = coerce (M.maxViewWithKey :: M.Map k a -> Maybe ((k, a), M.Map k
 valid :: forall k a. Ord k => MonoidalMap k a -> Bool
 valid = coerce (M.valid :: Ord k => M.Map k a -> Bool)
 {-# INLINE valid #-}
+
+
