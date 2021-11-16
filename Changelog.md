@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# Unreleased
+
+  * Support lens-5 and semialign-1.2
+
 # 0.6.0.1
 
   * Support semialign-1.1
