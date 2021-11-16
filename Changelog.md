@@ -1,8 +1,20 @@
 # Monoidal containers
 
-# Next
+# 0.6.1.0
 
+  * Require containers 0.5.9 or greater.
+  * MonoidalMap and MonoidalMap.Strict: Add several functions added to Data.Map since 0.5 up to 0.5.9:
+    `take`, `drop`, `splitAt`, `lookupMin`, `lookupMax`, `restrictKeys`,
+    `withoutKeys`, `fromDescList`,  `fromDescListWith`, `fromDescListWithKey`,
+    `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
+    `spanAntitone`, and `traverseMaybeWithKey`
+  * Support lens-5 and semialign-1.2
+  * Add instances of `Filterable` and `Witherable` from the `witherable` package
   * Added `Control.Lens.Wrapped.Rewrapped` instances.
+  
+# 0.6.0.1
+
+  * Support semialign-1.1
 
 # 0.6
 

@@ -1,4 +1,5 @@
 # monoidal-containers
+[![Build status](https://github.com/bgamari/monoidal-containers/actions/workflows/Cabal.yml/badge.svg)](https://github.com/bgamari/monoidal-containers/actions/workflows/Cabal.yml)
 
 Often when working with the containers offered by the `containers` and 
 `unordered-containers` packages one would prefer the monoidal structure 

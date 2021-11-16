@@ -60,6 +60,13 @@ import Data.Hashable.Lifted (Hashable1)
 import Control.Lens
 import Control.Newtype
 import Data.Align
+#ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
+#if MIN_VERSION_semialign(1,1,0)
+import Data.Zip (Zip)
+#endif
+#endif
+import qualified Witherable
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
@@ -71,6 +78,13 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #if MIN_VERSION_these(0,8,0)
              , Semialign
 #endif
+#ifdef MIN_VERSION_semialign
+             , Unalign
+#if MIN_VERSION_semialign(1,1,0)
+             , Zip
+#endif
+#endif
+             , Witherable.Filterable
              )
 
 type instance Index (MonoidalHashMap k a) = k
@@ -135,6 +149,8 @@ instance (Eq k, Hashable k, Semigroup a) => Exts.IsList (MonoidalHashMap k a) wh
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance (Eq k, Hashable k) => Witherable.Witherable (MonoidalHashMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: (Eq k, Hashable k) => k -> a -> MonoidalHashMap k a
