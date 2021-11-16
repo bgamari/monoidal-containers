@@ -147,9 +147,7 @@ import qualified Data.IntMap as M
 import Control.Lens
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
-#if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
-#endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
 import Data.Semialign (Unalign)
@@ -175,11 +173,9 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
 #endif
              )
 
-#if MIN_VERSION_containers(0,5,9)
 deriving instance Eq1 MonoidalIntMap
 deriving instance Ord1 MonoidalIntMap
 deriving instance Show1 MonoidalIntMap
-#endif
 
 type instance Index (MonoidalIntMap a) = Int
 type instance IxValue (MonoidalIntMap a) = a

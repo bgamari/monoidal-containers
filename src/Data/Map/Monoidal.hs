@@ -163,9 +163,7 @@ import qualified Data.Map as M
 import Control.Lens
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
-#if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
-#endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
 import Data.Semialign (Unalign)
@@ -191,11 +189,9 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
 #endif
              )
 
-#if MIN_VERSION_containers(0,5,9)
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
 deriving instance (Ord k) => Ord1 (MonoidalMap k)
 deriving instance (Show k) => Show1 (MonoidalMap k)
-#endif
 
 type instance Index (MonoidalMap k a) = k
 type instance IxValue (MonoidalMap k a) = a
