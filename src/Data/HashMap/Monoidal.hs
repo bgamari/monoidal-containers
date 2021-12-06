@@ -51,6 +51,10 @@ import Data.Typeable (Typeable)
 import qualified GHC.Exts as Exts
 #endif
 
+#if MIN_VERSION_base(4,9,0)
+import Data.Functor.Classes (Eq1)
+#endif
+
 import Control.DeepSeq
 import qualified Data.HashMap.Strict as M
 import Data.Hashable (Hashable)
@@ -72,6 +76,9 @@ import qualified Witherable
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
     deriving ( Show, Read, Functor, Eq, NFData
              , Foldable, Traversable, Data, Typeable, Hashable, Align
+#if MIN_VERSION_base(4,9,0)
+             , Eq1
+#endif
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
