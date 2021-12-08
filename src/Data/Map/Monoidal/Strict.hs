@@ -318,10 +318,9 @@ keys = M.keys . unpack
 {-# INLINE keys #-}
 
 (!?) :: forall k a. Ord k => MonoidalMap k a -> k -> Maybe a
-(!?) m k = (coerce m) !? k
+(!?) = coerce ((M.!?) :: M.Map k a -> k -> Maybe a)
 infixl 9 !?
 {-# INLINE (!?) #-}
-
 
 (!) :: forall k a. Ord k => MonoidalMap k a -> k -> a
 (!) = coerce ((M.!) :: M.Map k a -> k -> a)
