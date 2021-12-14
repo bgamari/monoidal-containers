@@ -1,5 +1,10 @@
 # Monoidal containers
 
+# 0.6.2.0
+
+  * [Remove cyclic definition of `!?`](https://github.com/bgamari/monoidal-containers/pull/88)
+  * [Bump lens and hashable version bounds](https://github.com/bgamari/monoidal-containers/pull/87)
+
 # 0.6.1.0
 
   * Drop official support for GHC 7.8.4
