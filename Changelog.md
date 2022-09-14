@@ -3,6 +3,24 @@
 # Unreleased
   * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap`/`MonoidalHashMap`/`MonoidalIntMap`
 
+# 0.6.2.0
+
+  * [Remove cyclic definition of `!?`](https://github.com/bgamari/monoidal-containers/pull/88)
+  * [Bump lens and hashable version bounds](https://github.com/bgamari/monoidal-containers/pull/87)
+
+# 0.6.1.0
+
+  * Drop official support for GHC 7.8.4
+  * Require containers 0.5.9 or greater.
+  * Support lens-5, semialign-1.2, and aeson-2
+  * MonoidalMap and MonoidalMap.Strict: Add several functions added to Data.Map since 0.5 up to 0.5.9:
+    `take`, `drop`, `splitAt`, `lookupMin`, `lookupMax`, `restrictKeys`,
+    `withoutKeys`, `fromDescList`,  `fromDescListWith`, `fromDescListWithKey`,
+    `fromDistinctDescList`, `takeWhileAntitone`, `dropWhileAntitone`,
+    `spanAntitone`, and `traverseMaybeWithKey`
+  * Add instances of `Filterable` and `Witherable` from the `witherable` package
+  * Add `Control.Lens.Wrapped.Rewrapped` instances.
+
 # 0.6.0.1
 
   * Support semialign-1.1

@@ -29,6 +29,7 @@ module Data.Map.Monoidal
     , assocs
     , elems
     , keys
+    , (!?)
     , (!)
     , (\\)
     , adjust
@@ -36,6 +37,11 @@ module Data.Map.Monoidal
     , alter
     , delete
     , deleteAt
+    , take
+    , drop
+    , splitAt
+    , lookupMin
+    , lookupMax
     , deleteFindMax
     , deleteFindMin
     , deleteMax
@@ -47,6 +53,8 @@ module Data.Map.Monoidal
     , empty
     , filter
     , filterWithKey
+    , restrictKeys
+    , withoutKeys
     , findIndex
     , findMax
     , findMin
@@ -64,6 +72,10 @@ module Data.Map.Monoidal
     , fromAscListWithKey
     , fromDistinctAscList
     , fromDistinctList
+    , fromDescList
+    , fromDescListWith
+    , fromDescListWithKey
+    , fromDistinctDescList
     , fromList
     , fromListWith
     , fromListWithKey
@@ -105,6 +117,9 @@ module Data.Map.Monoidal
     , null
     , partition
     , partitionWithKey
+    , takeWhileAntitone
+    , dropWhileAntitone
+    , spanAntitone
     , split
     , splitLookup
     , splitRoot
@@ -112,6 +127,7 @@ module Data.Map.Monoidal
     , toDescList
     , toList
     , traverseWithKey
+    , traverseMaybeWithKey
     , unionWith
     , unionWithKey
     , unionsWith
@@ -128,7 +144,7 @@ module Data.Map.Monoidal
     -- , showTreeWith
     ) where
 
-import Prelude hiding (null, lookup, map, foldl, foldr, filter)
+import Prelude hiding (null, lookup, map, foldl, foldr, filter, take, drop, splitAt)
 
 import Data.Coerce (coerce)
 import Data.Set (Set)
@@ -152,15 +168,15 @@ import qualified Data.Map as M
 import Control.Lens
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
-#if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
-#endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | A 'Map' with monoidal accumulation
 newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
@@ -173,17 +189,17 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
-#if MIN_VERSION_containers(0,5,9)
 deriving instance (Ord k) => Eq1 (MonoidalMap k)
 deriving instance (Ord k) => Ord1 (MonoidalMap k)
 deriving instance (Show k) => Show1 (MonoidalMap k)
-#endif
 
 type instance Index (MonoidalMap k a) = k
 type instance IxValue (MonoidalMap k a) = a
@@ -224,6 +240,10 @@ instance Wrapped (MonoidalMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance Ord k => Rewrapped (M.Map k a) (MonoidalMap k a)
+
+instance Ord k => Rewrapped (MonoidalMap k a) (M.Map k a)
+
 instance (Ord k, Semigroup a) => Semigroup (MonoidalMap k a) where
     MonoidalMap a <> MonoidalMap b = MonoidalMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
@@ -254,6 +274,8 @@ instance (Ord k, Semigroup a) => IsList.IsList (MonoidalMap k a) where
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance Ord k => Witherable.Witherable (MonoidalMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: k -> a -> MonoidalMap k a
@@ -305,6 +327,10 @@ keys :: MonoidalMap k a -> [k]
 keys = M.keys . unpack
 {-# INLINE keys #-}
 
+(!?) :: forall k a. Ord k => MonoidalMap k a -> k -> Maybe a
+(!?) = coerce ((M.!?) :: M.Map k a -> k -> Maybe a)
+infixl 9 !?
+{-# INLINE (!?) #-}
 
 
 (!) :: forall k a. Ord k => MonoidalMap k a -> k -> a
@@ -430,6 +456,10 @@ mapWithKey = coerce (M.mapWithKey :: (k -> a -> b) -> M.Map k a -> M.Map k b)
 traverseWithKey :: Applicative t => (k -> a -> t b) -> MonoidalMap k a -> t (MonoidalMap k b)
 traverseWithKey = itraverse
 {-# INLINE traverseWithKey #-}
+
+traverseMaybeWithKey :: forall f k a b. Applicative f => (k -> a -> f (Maybe b)) -> MonoidalMap k a -> f (MonoidalMap k b)
+traverseMaybeWithKey f m = coerce <$> M.traverseMaybeWithKey f (coerce m)
+{-# INLINE traverseMaybeWithKey #-}
 
 mapAccum :: forall k a b c. (a -> b -> (a, c)) -> a -> MonoidalMap k b -> (a, MonoidalMap k c)
 mapAccum = coerce (M.mapAccum :: (a -> b -> (a, c)) -> a -> M.Map k b -> (a, M.Map k c))
@@ -561,6 +591,22 @@ fromDistinctList :: forall k a. Ord k => [(k, a)] -> MonoidalMap k a
 fromDistinctList = coerce (M.fromList :: [(k, a)] -> M.Map k a)
 {-# INLINE fromDistinctList #-}
 
+fromDescList :: forall k a. Eq k => [(k, a)] -> MonoidalMap k a
+fromDescList = coerce (M.fromDescList :: [(k, a)] -> M.Map k a)
+{-# INLINE fromDescList #-}
+
+fromDescListWith :: forall k a. Eq k => (a -> a -> a) -> [(k, a)] -> MonoidalMap k a
+fromDescListWith = coerce (M.fromDescListWith :: (a -> a -> a) -> [(k, a)] -> M.Map k a)
+{-# INLINE fromDescListWith #-}
+
+fromDescListWithKey :: forall k a. Eq k => (k -> a -> a -> a) -> [(k, a)] -> MonoidalMap k a
+fromDescListWithKey = coerce (M.fromDescListWithKey :: (k -> a -> a -> a) -> [(k, a)] -> M.Map k a)
+{-# INLINE fromDescListWithKey #-}
+
+fromDistinctDescList :: forall k a. [(k, a)] -> MonoidalMap k a
+fromDistinctDescList = coerce (M.fromDistinctDescList :: [(k, a)] -> M.Map k a)
+{-# INLINE fromDistinctDescList #-}
+
 filter :: forall k a. (a -> Bool) -> MonoidalMap k a -> MonoidalMap k a
 filter = coerce (M.filter :: (a -> Bool) -> M.Map k a -> M.Map k a)
 {-# INLINE filter #-}
@@ -569,6 +615,14 @@ filterWithKey :: forall k a. (k -> a -> Bool) -> MonoidalMap k a -> MonoidalMap 
 filterWithKey = coerce (M.filterWithKey :: (k -> a -> Bool) -> M.Map k a -> M.Map k a)
 {-# INLINE filterWithKey #-}
 
+restrictKeys :: forall k a. Ord k => MonoidalMap k a -> Set k -> MonoidalMap k a
+restrictKeys = coerce (M.restrictKeys :: M.Map k a -> Set k -> M.Map k a)
+{-# INLINE restrictKeys #-}
+
+withoutKeys :: forall k a. Ord k => MonoidalMap k a -> Set k -> MonoidalMap k a
+withoutKeys = coerce (M.withoutKeys :: M.Map k a -> Set k -> M.Map k a)
+{-# INLINE withoutKeys #-}
+
 partition :: forall k a. (a -> Bool) -> MonoidalMap k a -> (MonoidalMap k a, MonoidalMap k a)
 partition = coerce (M.partition :: (a -> Bool) -> M.Map k a -> (M.Map k a, M.Map k a))
 {-# INLINE partition #-}
@@ -576,6 +630,18 @@ partition = coerce (M.partition :: (a -> Bool) -> M.Map k a -> (M.Map k a, M.Map
 partitionWithKey :: forall k a. (k -> a -> Bool) -> MonoidalMap k a -> (MonoidalMap k a, MonoidalMap k a)
 partitionWithKey = coerce (M.partitionWithKey :: (k -> a -> Bool) -> M.Map k a -> (M.Map k a, M.Map k a))
 {-# INLINE partitionWithKey #-}
+
+takeWhileAntitone :: forall k a. (k -> Bool) -> MonoidalMap k a -> MonoidalMap k a
+takeWhileAntitone = coerce (M.takeWhileAntitone :: (k -> Bool) -> M.Map k a -> M.Map k a)
+{-# INLINE takeWhileAntitone #-}
+
+dropWhileAntitone :: forall k a. (k -> Bool) -> MonoidalMap k a -> MonoidalMap k a
+dropWhileAntitone = coerce (M.dropWhileAntitone :: (k -> Bool) -> M.Map k a -> M.Map k a)
+{-# INLINE dropWhileAntitone #-}
+
+spanAntitone :: forall k a. (k -> Bool) -> MonoidalMap k a -> (MonoidalMap k a, MonoidalMap k a)
+spanAntitone = coerce (M.spanAntitone :: (k -> Bool) -> M.Map k a -> (M.Map k a, M.Map k a))
+{-# INLINE spanAntitone #-}
 
 mapMaybe :: forall k a b. (a -> Maybe b) -> MonoidalMap k a -> MonoidalMap k b
 mapMaybe = coerce (M.mapMaybe :: (a -> Maybe b) -> M.Map k a -> M.Map k b)
@@ -640,6 +706,26 @@ updateAt = coerce (M.updateAt :: (k -> a -> Maybe a) -> Int -> M.Map k a -> M.Ma
 deleteAt :: forall k a. Int -> MonoidalMap k a -> MonoidalMap k a
 deleteAt = coerce (M.deleteAt :: Int -> M.Map k a -> M.Map k a)
 {-# INLINE deleteAt #-}
+
+take :: forall k a. Int -> MonoidalMap k a -> MonoidalMap k a
+take = coerce (M.take :: Int -> M.Map k a -> M.Map k a)
+{-# INLINE take #-}
+
+drop :: forall k a. Int -> MonoidalMap k a -> MonoidalMap k a
+drop = coerce (M.drop :: Int -> M.Map k a -> M.Map k a)
+{-# INLINE drop #-}
+
+splitAt :: forall k a. Int -> MonoidalMap k a -> (MonoidalMap k a, MonoidalMap k a)
+splitAt = coerce (M.splitAt :: Int -> M.Map k a -> (M.Map k a, M.Map k a))
+{-# INLINE splitAt #-}
+
+lookupMin :: forall k a. MonoidalMap k a -> Maybe (k, a)
+lookupMin = coerce (M.lookupMin :: M.Map k a -> Maybe (k, a))
+{-# INLINE lookupMin #-}
+
+lookupMax :: forall k a. MonoidalMap k a -> Maybe (k, a)
+lookupMax = coerce (M.lookupMax :: M.Map k a -> Maybe (k, a))
+{-# INLINE lookupMax #-}
 
 findMin :: forall k a. MonoidalMap k a -> (k, a)
 findMin = coerce (M.findMin :: M.Map k a -> (k, a))

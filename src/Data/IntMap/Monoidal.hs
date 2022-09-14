@@ -8,8 +8,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 -- | This module provides a 'Data.IntMap' variant which uses the value's
 -- 'Monoid' instance to accumulate conflicting entries when merging
@@ -154,15 +152,15 @@ import qualified Data.IntMap as M
 import Control.Lens
 import Control.Newtype
 import Data.Aeson(FromJSON, ToJSON, FromJSON1, ToJSON1)
-#if MIN_VERSION_containers(0,5,9)
 import Data.Functor.Classes
-#endif
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | An 'IntMap' with monoidal accumulation
 newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
@@ -175,17 +173,17 @@ newtype MonoidalIntMap a = MonoidalIntMap { getMonoidalIntMap :: M.IntMap a }
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
-#if MIN_VERSION_containers(0,5,9)
 deriving instance Eq1 MonoidalIntMap
 deriving instance Ord1 MonoidalIntMap
 deriving instance Show1 MonoidalIntMap
-#endif
 
 type instance Index (MonoidalIntMap a) = Int
 type instance IxValue (MonoidalIntMap a) = a
@@ -256,6 +254,8 @@ instance Semigroup a => IsList.IsList (MonoidalIntMap a) where
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance Witherable.Witherable MonoidalIntMap
 
 -- | /O(1)/. A map with a single element.
 singleton :: Int -> a -> MonoidalIntMap a

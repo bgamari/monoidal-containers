@@ -6,7 +6,6 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | This module provides a 'Data.HashMap' variant which uses the value's
@@ -59,6 +58,10 @@ import Data.Typeable (Typeable)
 import qualified GHC.Exts as Exts
 #endif
 
+#if MIN_VERSION_base(4,9,0)
+import Data.Functor.Classes (Eq1)
+#endif
+
 import Control.DeepSeq
 import qualified Data.HashMap.Strict as M
 import Data.Hashable (Hashable)
@@ -69,10 +72,12 @@ import Control.Lens
 import Control.Newtype
 import Data.Align
 #ifdef MIN_VERSION_semialign
+import Data.Semialign (Unalign)
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
 #endif
+import qualified Witherable
 
 -- | A 'HashMap' with monoidal accumulation
 newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap k a }
@@ -84,6 +89,9 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
 #if MIN_VERSION_semigroupoids(5,3,3)
              , Plus
 #endif
+#if MIN_VERSION_base(4,9,0)
+             , Eq1
+#endif
 #if MIN_VERSION_unordered_containers(0,2,8)
              , Hashable1
 #endif
@@ -91,10 +99,12 @@ newtype MonoidalHashMap k a = MonoidalHashMap { getMonoidalHashMap :: M.HashMap 
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
+             , Unalign
 #if MIN_VERSION_semialign(1,1,0)
              , Zip
 #endif
 #endif
+             , Witherable.Filterable
              )
 
 type instance Index (MonoidalHashMap k a) = k
@@ -129,6 +139,10 @@ instance Wrapped (MonoidalHashMap k a) where
     _Wrapped' = iso unpack pack
     {-# INLINE _Wrapped' #-}
 
+instance (Eq k, Hashable k) => Rewrapped (M.HashMap k a) (MonoidalHashMap k a)
+
+instance (Eq k, Hashable k) => Rewrapped (MonoidalHashMap k a) (M.HashMap k a)
+
 instance (Eq k, Hashable k, Semigroup a) => Semigroup (MonoidalHashMap k a) where
     MonoidalHashMap a <> MonoidalHashMap b = MonoidalHashMap $ M.unionWith (<>) a b
     {-# INLINE (<>) #-}
@@ -161,6 +175,8 @@ instance (Eq k, Hashable k, Semigroup a) => Exts.IsList (MonoidalHashMap k a) wh
     toList = M.toList . unpack
     {-# INLINE toList #-}
 #endif
+
+instance (Eq k, Hashable k) => Witherable.Witherable (MonoidalHashMap k)
 
 -- | /O(1)/. A map with a single element.
 singleton :: (Eq k, Hashable k) => k -> a -> MonoidalHashMap k a
