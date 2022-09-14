@@ -1,5 +1,8 @@
 # Monoidal containers
 
+# Unreleased
+  * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap`/`MonoidalHashMap`/`MonoidalIntMap`
+
 # 0.6.2.0
 
   * [Remove cyclic definition of `!?`](https://github.com/bgamari/monoidal-containers/pull/88)
@@ -17,7 +20,7 @@
     `spanAntitone`, and `traverseMaybeWithKey`
   * Add instances of `Filterable` and `Witherable` from the `witherable` package
   * Add `Control.Lens.Wrapped.Rewrapped` instances.
-  
+
 # 0.6.0.1
 
   * Support semialign-1.1
