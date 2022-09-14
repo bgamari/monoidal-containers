@@ -60,7 +60,7 @@ library
     , hashable              >=1.2   && <1.5
     , lens                  >=4.4   && <5.3
     , newtype               >=0.2   && <0.3
-    , semigroupoids         >=5.0   && <5.4
+    , semigroupoids         >=4.0   && <5.4
     , unordered-containers  >=0.2   && <0.3
     , witherable            >=0.4   && <0.5
 
