@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# 0.6.3.0
+
+  * [Bump upper bounds of aeson, base, and lens](https://github.com/bgamari/monoidal-containers/pull/92)
+
 # 0.6.2.0
 
   * [Remove cyclic definition of `!?`](https://github.com/bgamari/monoidal-containers/pull/88)
@@ -17,7 +21,7 @@
     `spanAntitone`, and `traverseMaybeWithKey`
   * Add instances of `Filterable` and `Witherable` from the `witherable` package
   * Add `Control.Lens.Wrapped.Rewrapped` instances.
-  
+
 # 0.6.0.1
 
   * Support semialign-1.1
