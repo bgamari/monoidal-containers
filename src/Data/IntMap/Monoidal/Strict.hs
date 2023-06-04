@@ -127,7 +127,7 @@ module Data.IntMap.Monoidal.Strict
     -- , showTreeWith
     ) where
 
-import Prelude hiding (null, lookup, map, foldl, foldr, filter)
+import Prelude hiding (Foldable(..), lookup, map, filter)
 
 import Data.Coerce (coerce)
 import Data.IntSet (IntSet)
