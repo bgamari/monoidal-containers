@@ -1,5 +1,5 @@
 name:               monoidal-containers
-version:            0.6.4.0
+version:            0.6.5.0
 synopsis:           Containers with monoidal accumulation
 description:
   Containers with merging via monoidal accumulation. The 'Monoid' instances
@@ -54,14 +54,14 @@ library
 
   build-depends:
       aeson                 >=1.0   && <2.3
-    , base                  >=4.7   && <4.20
+    , base                  >=4.7   && <4.21
     , containers            >=0.5.9 && <0.8
     , deepseq               >=1.3   && <1.6
     , hashable              >=1.2   && <1.5
-    , lens                  >=4.4   && <5.3
+    , lens                  >=4.4   && <5.4
     , newtype               >=0.2   && <0.3
     , unordered-containers  >=0.2   && <0.3
-    , witherable            >=0.4   && <0.5
+    , witherable            >=0.4   && <0.6
 
   if flag(split-these)
     build-depends:
