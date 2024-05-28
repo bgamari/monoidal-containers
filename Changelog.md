@@ -3,6 +3,16 @@
 # Unreleased
   * Add `Apply`/`Bind`/`Alt`/`Plus` instances to `MonoidalMap`/`MonoidalHashMap`/`MonoidalIntMap`
 
+# 0.6.4.0
+
+* [Bump upper bound of `these`](https://github.com/bgamari/monoidal-containers/pull/95)
+* [Bump upper bound of `semialign`](https://github.com/bgamari/monoidal-containers/pull/96)
+* [Build with GHC 9.6](https://github.com/bgamari/monoidal-containers/pull/97)
+
+# 0.6.3.0
+
+  * [Bump upper bounds of aeson, base, and lens](https://github.com/bgamari/monoidal-containers/pull/92)
+
 # 0.6.2.0
 
   * [Remove cyclic definition of `!?`](https://github.com/bgamari/monoidal-containers/pull/88)

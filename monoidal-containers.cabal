@@ -1,5 +1,5 @@
 name:               monoidal-containers
-version:            0.6.2.0
+version:            0.6.4.0
 synopsis:           Containers with monoidal accumulation
 description:
   Containers with merging via monoidal accumulation. The 'Monoid' instances
@@ -53,12 +53,12 @@ library
     MultiParamTypeClasses
 
   build-depends:
-      aeson                 >=1.0   && <2.2
-    , base                  >=4.7   && <4.18
-    , containers            >=0.5.9 && <0.7
-    , deepseq               >=1.3   && <1.5
+      aeson                 >=1.0   && <2.3
+    , base                  >=4.7   && <4.20
+    , containers            >=0.5.9 && <0.8
+    , deepseq               >=1.3   && <1.6
     , hashable              >=1.2   && <1.5
-    , lens                  >=4.4   && <5.3
+    , lens                  >=4.4   && <5.4
     , newtype               >=0.2   && <0.3
     , semigroupoids         >=4.0   && <5.4
     , unordered-containers  >=0.2   && <0.3
@@ -66,8 +66,8 @@ library
 
   if flag(split-these)
     build-depends:
-        semialign  >=1 && <1.3
-      , these      >=1 && <1.2
+        semialign  >=1 && <1.4
+      , these      >=1 && <1.3
 
   else
     build-depends: these >=0.7 && <0.9
