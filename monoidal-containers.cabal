@@ -1,5 +1,5 @@
 name:               monoidal-containers
-version:            0.6.4.0
+version:            0.6.5.0
 synopsis:           Containers with monoidal accumulation
 description:
   Containers with merging via monoidal accumulation. The 'Monoid' instances
@@ -26,7 +26,8 @@ build-type:         Simple
 cabal-version:      >=1.10
 extra-source-files: Changelog.md
 tested-with:
-  GHC ==8.2.2 || ==8.4.4 || ==8.6.5 || ==8.8.4 || ==8.10.2 || ==9.0.2 || ==9.2.1 || ==9.4.1
+  GHC ==8.2 || ==8.4 || ==8.6 || ==8.8 || ==8.10 || ==9.0 || ==9.2 || ==9.4
+   || ==9.6 || ==9.10
 
 source-repository head
   type:     git
