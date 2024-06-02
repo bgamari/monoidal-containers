@@ -1,5 +1,9 @@
 # Monoidal containers
 
+# 0.6.5.0
+
+* [Support for GHC 9.10](https://github.com/bgamari/monoidal-containers/pull/105)
+
 # 0.6.4.0
 
 * [Bump upper bound of `these`](https://github.com/bgamari/monoidal-containers/pull/95)
