@@ -31,7 +31,7 @@ tested-with:
 
 source-repository head
   type:     git
-  location: git://github.com/bgamari/monoidal-containers
+  location: https://github.com/bgamari/monoidal-containers
 
 flag split-these
   description: Use split these/semialign packages
