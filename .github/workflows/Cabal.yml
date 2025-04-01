@@ -8,10 +8,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        ghc: ['8.2', '8.4', '8.6', '8.8', '8.10', '9.0', '9.2', '9.4', '9.6', '9.8', '9.10', '9.12']
+        cabal: ['latest']
+        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2', '9.4', '9.6', '9.8', '9.10', '9.12']
         include:
           - ghc: '9.10'
             os: 'macos-latest'
+          - ghc: '8.2'
+            os: 'ubuntu-latest'
+            cabal: 3.12
+          - ghc: '8.4'
+            os: 'ubuntu-latest'
+            cabal: 3.12
     runs-on: ${{ matrix.os }}
 
     name: GHC ${{ matrix.ghc }} on ${{ matrix.os }}
@@ -23,6 +30,7 @@ jobs:
       id: setup
       with:
         ghc-version: ${{ matrix.ghc }}
+        cabal-version: ${{ matrix.cabal }}
 
     - name: Configure the build
       run: |
