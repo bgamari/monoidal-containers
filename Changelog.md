@@ -1,5 +1,10 @@
 # Monoidal containers
 
+# 0.6.6.0
+
+* [Support ghc 9.12](https://github.com/bgamari/monoidal-containers/pull/108)
+* [Allow hashable 1.5](https://github.com/bgamari/monoidal-containers/pull/107]
+
 # 0.6.5.0
 
 * [Support for GHC 9.10](https://github.com/bgamari/monoidal-containers/pull/105)
