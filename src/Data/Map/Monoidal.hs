@@ -167,6 +167,9 @@ import Data.Functor.Classes
 import Data.Align
 #ifdef MIN_VERSION_semialign
 import Data.Semialign (Unalign)
+#if MIN_VERSION_semialign(1,4,0)
+import Data.Semialign (Unzip)
+#endif
 #if MIN_VERSION_semialign(1,1,0)
 import Data.Zip (Zip)
 #endif
@@ -180,6 +183,9 @@ newtype MonoidalMap k a = MonoidalMap { getMonoidalMap :: M.Map k a }
              , FromJSON, ToJSON, FromJSON1, ToJSON1
              , Data, Typeable, Align
 #if MIN_VERSION_these(0,8,0)
+#if MIN_VERSION_semialign(1,4,0)
+             , Unzip
+#endif
              , Semialign
 #endif
 #ifdef MIN_VERSION_semialign
