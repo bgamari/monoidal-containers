@@ -1,5 +1,10 @@
 # Monoidal containers
 
+# 0.6.8.0
+
+* [Support aeson 2.3](https://github.com/bgamari/monoidal-containers/pull/114)
+* [Support semialign-1.4](https://github.com/bgamari/monoidal-containers/pull/112)
+
 # 0.6.7.0
 
 * [Support ghc 9.14](https://github.com/bgamari/monoidal-containers/pull/111)
